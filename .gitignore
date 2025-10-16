@@ -1,0 +1,118 @@
+# ===================================
+# Python Backend
+# ===================================
+
+# Virtual Environment
+backend/venv/
+backend/venv-windows/
+backend/env/
+backend/.venv/
+backend/.env/
+*.pyc
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Environment Variables
+backend/.env
+backend/.env.local
+backend/.env.*.local
+
+# Python Distribution / Packaging
+backend/dist/
+backend/build/
+backend/*.egg-info/
+backend/.eggs/
+
+# Testing
+backend/.pytest_cache/
+backend/.coverage
+backend/htmlcov/
+backend/.tox/
+
+# IDEs
+backend/.vscode/
+backend/.idea/
+backend/*.swp
+backend/*.swo
+backend/*~
+
+# Logs
+backend/*.log
+backend/logs/
+
+# Database
+backend/*.db
+backend/*.sqlite
+backend/*.sqlite3
+
+# ===================================
+# Next.js Frontend
+# ===================================
+
+# Dependencies
+frontend/node_modules/
+frontend/.pnp
+frontend/.pnp.js
+frontend/.yarn/install-state.gz
+
+# Testing
+frontend/coverage/
+
+# Next.js
+frontend/.next/
+frontend/out/
+frontend/build/
+
+# Production
+frontend/dist/
+
+# Misc
+frontend/.DS_Store
+frontend/*.pem
+
+# Debug
+frontend/npm-debug.log*
+frontend/yarn-debug.log*
+frontend/yarn-error.log*
+
+# Environment Variables
+frontend/.env
+frontend/.env*.local
+frontend/.env.development.local
+frontend/.env.test.local
+frontend/.env.production.local
+
+# Vercel
+frontend/.vercel
+
+# TypeScript
+frontend/*.tsbuildinfo
+frontend/next-env.d.ts
+
+# ===================================
+# General
+# ===================================
+
+# OS Files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Logs
+*.log
+
+# Temporary files
+*.tmp
+*.temp

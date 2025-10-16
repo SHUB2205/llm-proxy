@@ -1,10 +1,12 @@
 'use client'
 import { useState, useEffect } from 'react'
 import axios from 'axios'
+import { useAuth } from '@/contexts/AuthContext'
 
-const API_URL = 'http://localhost:8000'
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'
 
 export default function Dashboard() {
+  const { isAuthenticated, userEmail } = useAuth()
   const [stats, setStats] = useState<any>(null)
   const [recentRuns, setRecentRuns] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
@@ -17,9 +19,10 @@ export default function Dashboard() {
 
   const loadData = async () => {
     try {
+      // Use public endpoints for now (no auth required)
       const [statsData, runsData] = await Promise.all([
-        axios.get(`${API_URL}/v1/stats`),
-        axios.get(`${API_URL}/v1/runs?limit=5`)
+        axios.get(`${API_URL}/v1/public/stats`),
+        axios.get(`${API_URL}/v1/public/runs?limit=5`)
       ])
       setStats(statsData.data)
       const runs = (runsData.data as { runs: any[] }).runs || []
@@ -39,33 +42,48 @@ export default function Dashboard() {
       value: stats?.last_24h?.total_requests || 0,
       subtitle: 'Last 24 hours',
       color: 'from-indigo-500 to-blue-600',
-      change: '+12%',
+      icon: '📊',
     },
     {
-      label: 'Total Tokens',
-      value: (stats?.last_24h?.total_tokens || 0).toLocaleString(),
-      subtitle: 'Tokens processed',
-      color: 'from-purple-500 to-fuchsia-600',
-      change: '+8%',
+      label: 'Flagged Requests',
+      value: stats?.last_24h?.flagged_requests || 0,
+      subtitle: 'Safety issues detected',
+      color: 'from-red-500 to-pink-600',
+      icon: '🚨',
     },
     {
       label: 'Total Cost',
       value: `$${(stats?.last_24h?.total_cost || 0).toFixed(4)}`,
       subtitle: 'USD in last 24h',
       color: 'from-green-500 to-emerald-600',
-      change: '-5%',
+      icon: '💰',
     },
     {
       label: 'Avg Latency',
       value: `${Math.round(stats?.last_24h?.avg_latency || 0)}ms`,
       subtitle: 'Average response time',
       color: 'from-orange-500 to-amber-600',
-      change: '+3%',
+      icon: '⚡',
     },
   ]
 
   return (
     <div className="p-8 pb-16 min-h-screen bg-[#0f172a] text-gray-100 transition-colors duration-500">
+      {/* Welcome Banner for Authenticated Users */}
+      {isAuthenticated && userEmail && (
+        <div className="mb-6 bg-gradient-to-r from-indigo-500/20 to-purple-500/20 border border-indigo-500/50 rounded-2xl p-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <h2 className="text-xl font-bold text-white mb-1">Welcome back! 👋</h2>
+              <p className="text-gray-300 text-sm">Logged in as <span className="font-semibold text-indigo-300">{userEmail}</span></p>
+            </div>
+            <div className="text-sm text-gray-400">
+              Your proxy is active and monitoring requests
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Header */}
       <div className="mb-10 flex items-center justify-between">
         <div>
@@ -91,22 +109,14 @@ export default function Dashboard() {
           >
             <div className={`absolute inset-0 bg-gradient-to-br ${stat.color} opacity-10`}></div>
             <div className="relative flex flex-col justify-between h-full">
-              <div className="text-sm text-gray-400 mb-1">{stat.label}</div>
+              <div className="flex items-center justify-between mb-1">
+                <div className="text-sm text-gray-400">{stat.label}</div>
+                <span className="text-2xl">{stat.icon}</span>
+              </div>
               <div className="text-4xl font-bold text-white mb-1">
                 {stat.value}
               </div>
-              <div className="flex items-center justify-between">
-                <div className="text-xs text-gray-500">{stat.subtitle}</div>
-                <span
-                  className={`text-xs font-semibold px-2 py-1 rounded-full ${
-                    stat.change.startsWith('+')
-                      ? 'bg-green-900/30 text-green-300'
-                      : 'bg-red-900/30 text-red-300'
-                  }`}
-                >
-                  {stat.change}
-                </span>
-              </div>
+              <div className="text-xs text-gray-500">{stat.subtitle}</div>
             </div>
           </div>
         ))}
