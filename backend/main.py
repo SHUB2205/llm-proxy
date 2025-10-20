@@ -26,12 +26,28 @@ from database import (
 )
 from hallucination_detector import HallucinationDetector, calculate_overall_risk_score
 
+# Import enterprise features
+try:
+    from enterprise_api import router as enterprise_router
+    ENTERPRISE_ENABLED = True
+except ImportError:
+    ENTERPRISE_ENABLED = False
+    print("⚠️  Enterprise features not available. Install dependencies or check enterprise_api.py")
+
+# Import reliability features (CORE VALUE)
+try:
+    from reliability_api import router as reliability_router
+    RELIABILITY_ENABLED = True
+except ImportError:
+    RELIABILITY_ENABLED = False
+    print("⚠️  Reliability features not available. Install dependencies or check reliability_api.py")
+
 load_dotenv()
 
 app = FastAPI(
     title="LLM Observability Platform",
-    description="AI Safety Monitoring with Hallucination Detection",
-    version="2.0.0"
+    description="AI Safety Monitoring with Hallucination Detection + Enterprise Features",
+    version="2.1.0"
 )
 
 # CORS
@@ -45,6 +61,16 @@ app.add_middleware(
 
 # Initialize detector
 detector = HallucinationDetector()
+
+# Include enterprise router if available
+if ENTERPRISE_ENABLED:
+    app.include_router(enterprise_router)
+    print("✅ Enterprise features enabled")
+
+# Include reliability router (CORE FEATURE)
+if RELIABILITY_ENABLED:
+    app.include_router(reliability_router)
+    print("✅ Reliability & Prompt Optimization enabled")
 
 
 # ============================================
