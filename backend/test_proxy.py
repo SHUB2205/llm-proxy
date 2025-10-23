@@ -1,7 +1,7 @@
 import httpx
 
 API_URL = "http://localhost:8000/v1/chat/completions"
-PROXY_KEY = "llm_obs_j-ifyVxWlsKnJNVfM-h_EA0nziW7Qmx14h4Zrfe6MUM"
+PROXY_KEY = "llm_obs_kNGfSbGJrVLFyUm4GyKPaC2RrFRklmJ7XAYhN9zHOOk"
 
 print("🚀 Sending request to proxy...")
 print(f"URL: {API_URL}")
@@ -53,3 +53,6 @@ try:
 except Exception as e:
     print(f"❌ Error parsing response: {e}")
     print(f"Raw content: {response.text}")
+
+
+
