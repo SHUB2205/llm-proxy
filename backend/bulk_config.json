@@ -1,0 +1,60 @@
+{
+  "proxy_url": "http://localhost:8000/v1/chat/completions",
+  "reliability_url": "http://localhost:8000/v1/reliability",
+  "proxy_key": "llm_obs_your_key_here",
+  
+  "model_settings": {
+    "model": "gpt-4o-mini",
+    "temperature": 0.7,
+    "max_tokens": 600
+  },
+  
+  "batch_settings": {
+    "concurrency": 5,
+    "total_requests": 50,
+    "request_interval": 0.1,
+    "max_retries": 3,
+    "backoff_base": 1.0
+  },
+  
+  "reliability_thresholds": {
+    "min_prompt_reliability": 0.6,
+    "min_response_reliability": 0.6,
+    "auto_use_optimized_prompt": false,
+    "halt_on_low_reliability": false
+  },
+  
+  "prompts": [
+    {
+      "id": "factual_query",
+      "text": "List 3 key components of transformer neural networks with brief descriptions",
+      "expected_reliability": "high"
+    },
+    {
+      "id": "data_analysis",
+      "text": "Based on the following data: [sales: $100K, costs: $60K], calculate the profit margin and ROI",
+      "expected_reliability": "high"
+    },
+    {
+      "id": "summarization",
+      "text": "Summarize the main points from this text: [text]. Use bullet points and cite specific quotes.",
+      "expected_reliability": "high"
+    }
+  ],
+  
+  "output_settings": {
+    "save_detailed_results": true,
+    "save_summary_csv": true,
+    "save_advice": true,
+    "detailed_file": "bulk_results_detailed.jsonl",
+    "summary_file": "bulk_summary.csv",
+    "advice_file": "ai_usage_advice.json"
+  },
+  
+  "advice_settings": {
+    "generate_cost_optimization": true,
+    "generate_prompt_improvement": true,
+    "generate_reliability_tips": true,
+    "generate_model_recommendations": true
+  }
+}

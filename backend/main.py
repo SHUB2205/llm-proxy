@@ -42,6 +42,14 @@ except ImportError:
     RELIABILITY_ENABLED = False
     print("⚠️  Reliability features not available. Install dependencies or check reliability_api.py")
 
+# Import AI FinOps features (COMPLETE VISIBILITY)
+try:
+    from ai_finops_api import router as finops_router
+    FINOPS_ENABLED = True
+except ImportError:
+    FINOPS_ENABLED = False
+    print("⚠️  AI FinOps features not available. Install dependencies or check ai_finops_api.py")
+
 load_dotenv()
 
 app = FastAPI(
@@ -71,6 +79,11 @@ if ENTERPRISE_ENABLED:
 if RELIABILITY_ENABLED:
     app.include_router(reliability_router)
     print("✅ Reliability & Prompt Optimization enabled")
+
+# Include AI FinOps router (COMPLETE VISIBILITY)
+if FINOPS_ENABLED:
+    app.include_router(finops_router)
+    print("✅ AI FinOps & Advanced Observability enabled")
 
 
 # ============================================

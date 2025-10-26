@@ -24,9 +24,11 @@ function Sidebar() {
   
   const links = [
     { name: 'Dashboard', href: '/', icon: '📊' },
-    { name: 'All Requests', href: '/runs', icon: '📝' },
+    { name: 'FinOps', href: '/finops', icon: '💰' },
+    { name: 'Prompt Optimizer', href: '/optimizer', icon: '🎯' },
     { name: 'Safety Flags', href: '/flags', icon: '🚨' },
-    { name: 'Get Started', href: '/onboard', icon: '🚀' },
+    { name: 'All Requests', href: '/runs', icon: '📝' },
+    { name: 'Settings', href: '/settings', icon: '⚙️' },
   ]
 
   return (

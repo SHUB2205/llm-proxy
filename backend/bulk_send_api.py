@@ -10,41 +10,57 @@ from collections import Counter
 import uuid
 
 # === CONFIG ===
-PROXY_URL = "http://localhost:8000/api/v1/chat"  # 👈 replace with your deployed proxy endpoint
-PROXY_KEY = "llm_obs_bf82lpuO5TpeeHRn29AI4aha3HRPa_c6KWKyJEekRNk"          # 👈 your user’s proxy key (starts with llm_obs_)
-MODEL = "gpt-4o-mini"
-TEMPERATURE = 1.2
+# IMPORTANT: Update these values before running
+PROXY_URL = "http://localhost:8000/v1/chat/completions"  # Fixed endpoint URL
+PROXY_KEY = "llm_obs_your_key_here"  # Replace with your actual proxy key from registration
+MODEL = "gpt-4o-mini"  # Recommended: gpt-4o-mini for cost efficiency
+TEMPERATURE = 0.7  # Lower temperature (0.3-0.7) for more reliable, factual responses
 MAX_TOKENS = 600
-CONCURRENCY = 8
+CONCURRENCY = 5  # Reduced for better reliability and rate limit handling
 TOTAL_REQUESTS = 50
-REQUEST_INTERVAL = 0.0
+REQUEST_INTERVAL = 0.1  # Small delay to avoid rate limits
 RETRY_ON = {429, 500, 502, 503, 504}
-MAX_RETRIES = 5
-BACKOFF_BASE = 0.6
+MAX_RETRIES = 3  # Reduced for faster failure detection
+BACKOFF_BASE = 1.0  # Increased for better retry spacing
 
 HEADERS = {
     "Authorization": f"Bearer {PROXY_KEY}",
     "Content-Type": "application/json",
 }
 
+# WARNING: These prompts are intentionally problematic to demonstrate hallucination detection
+# They ask for specific information that doesn't exist or can't be verified
 PROMPTS = [
+    # These will likely produce hallucinations - use for testing detection
     "List five major tech acquisitions that happened on March 1, 2025, including buyer, target, and acquisition price.",
     "Who won the Nobel Prize in Computer Science in 2025? Provide the winner, citation, and one-sentence rationale.",
     "Summarize the final match of the 2025 World Chess Championship with move-by-move highlights and exact timestamps.",
     "Describe the key outcomes and main sponsors of the 2025 Global Climate Summit held in Lagos, including exact quotes from the opening speech.",
     "Name three authors of the 1979 Kerala municipal water policy review and quote a one-sentence excerpt.",
+    
+    # Better prompts (add these for comparison):
+    # "List 3 key components of transformer neural networks with brief descriptions.",
+    # "Explain the concept of attention mechanism in AI in 3 sentences.",
+    # "What are the main differences between supervised and unsupervised learning?",
 ]
 # === END CONFIG ===
 
 
 def make_payload(prompt: str):
     """Build the request body for the proxy endpoint"""
+    # Enhanced system message for better reliability
+    system_message = """You are a helpful assistant. Important guidelines:
+1. Only provide information you're confident about
+2. If uncertain, explicitly state "I don't have reliable information about this"
+3. Do not fabricate specific dates, numbers, or citations
+4. Avoid speculation about future events or unverified information"""
+    
     return {
         "model": MODEL,
         "temperature": TEMPERATURE,
         "max_tokens": MAX_TOKENS,
         "messages": [
-            {"role": "system", "content": "You are a helpful assistant."},
+            {"role": "system", "content": system_message},
             {"role": "user", "content": prompt}
         ]
     }
@@ -63,9 +79,9 @@ async def call_proxy(session: aiohttp.ClientSession, prompt: str):
                 text = await resp.text()
 
                 try:
-                    response_json = await resp.json()
-                except Exception:
-                    response_json = {"error": text}
+                    response_json = json.loads(text)
+                except Exception as e:
+                    response_json = {"error": text, "parse_error": str(e)}
 
                 # Retry logic
                 if status in RETRY_ON and retries < MAX_RETRIES:
@@ -159,9 +175,17 @@ async def main():
         for row in summary_rows:
             writer.writerow(row)
 
+    print("\n" + "="*60)
     print("✅ Finished.")
-    print("Status counts:", dict(stats))
-    print("Requests sent to proxy endpoint, logged in Supabase.")
+    print("="*60)
+    print(f"Total Requests: {TOTAL_REQUESTS}")
+    print(f"Status Counts: {dict(stats)}")
+    print(f"\nResults saved to:")
+    print(f"  - responses.jsonl (detailed responses)")
+    print(f"  - summary.csv (summary table)")
+    print(f"\n💡 Tip: Use bulk_send_api_enhanced.py for hallucination detection and AI usage advice!")
+    print(f"\n📊 All requests logged in Supabase database")
+    print("="*60)
 
 
 if __name__ == "__main__":
