@@ -45,9 +45,12 @@ except ImportError:
 # Import AI FinOps features (COMPLETE VISIBILITY)
 try:
     from ai_finops_api import router as finops_router
+    from ai_finops import AIFinOpsTracker
     FINOPS_ENABLED = True
+    finops_tracker = AIFinOpsTracker()
 except ImportError:
     FINOPS_ENABLED = False
+    finops_tracker = None
     print("⚠️  AI FinOps features not available. Install dependencies or check ai_finops_api.py")
 
 load_dotenv()
@@ -318,6 +321,46 @@ async def proxy_chat_completions(
             flags=flags
         )
         
+        # Track in FinOps system
+        if FINOPS_ENABLED and finops_tracker and "usage" in result:
+            try:
+                # Get organization_id from user context or use user_id
+                organization_id = user_context.get("users", {}).get("organization_id") or user_id
+                
+                # Start workflow if not exists
+                workflow_id = f"user_{user_id}_session"
+                if workflow_id not in finops_tracker.active_workflows:
+                    finops_tracker.start_workflow(
+                        workflow_id=workflow_id,
+                        workflow_name="API Requests",
+                        organization_id=organization_id
+                    )
+                
+                # Track the call
+                await finops_tracker.track_agent_call(
+                    call_id=run_id,
+                    agent_name=body.get("agent_name", "default"),
+                    model=body.get("model", "unknown"),
+                    input_tokens=result["usage"].get("prompt_tokens", 0),
+                    output_tokens=result["usage"].get("completion_tokens", 0),
+                    latency_ms=latency_ms,
+                    workflow_id=workflow_id,
+                    metadata={
+                        "user_id": user_id,
+                        "organization_id": organization_id
+                    }
+                )
+            except Exception as e:
+                print(f"⚠️  FinOps tracking failed: {e}")
+        
+        # Calculate cost for observability
+        cost_usd = 0.0
+        if "usage" in result:
+            # Simple cost calculation (gpt-4o-mini pricing)
+            input_tokens = result["usage"].get("prompt_tokens", 0)
+            output_tokens = result["usage"].get("completion_tokens", 0)
+            cost_usd = (input_tokens * 0.00015 / 1000) + (output_tokens * 0.0006 / 1000)
+        
         # Add observability metadata to response
         return {
             "run_id": run_id,
@@ -325,7 +368,9 @@ async def proxy_chat_completions(
                 "flags_detected": len(flags),
                 "risk_score": risk_score,
                 "risk_level": risk_level,
-                "flags": flags if flags else []
+                "flags": flags if flags else [],
+                "cost_usd": cost_usd,
+                "tokens": result.get("usage", {})
             },
             **result
         }

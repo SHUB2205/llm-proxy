@@ -1,0 +1,14 @@
+[
+  {
+    "category": "Prompt Quality",
+    "issue": "50 prompts had low reliability scores",
+    "recommendation": "Use prompt templates or the /v1/reliability/analyze-prompt endpoint before sending",
+    "impact": "Could reduce hallucinations by 70%"
+  },
+  {
+    "category": "Response Verification",
+    "issue": "10 responses had low reliability",
+    "recommendation": "Implement mandatory human review for responses with score < 0.6",
+    "impact": "Prevents unreliable information from reaching users"
+  }
+]

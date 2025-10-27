@@ -23,7 +23,7 @@ from dataclasses import dataclass, asdict
 # === CONFIG ===
 PROXY_URL = "http://localhost:8000/v1/chat/completions"
 RELIABILITY_URL = "http://localhost:8000/v1/reliability"
-PROXY_KEY = "llm_obs_your_key_here"  # Replace with your actual key
+PROXY_KEY = "llm_obs_BJfOcwgECDNBGfZNYjl8_0pqh1f8j_EYURLVYOkNZ0M"  # Replace with your actual key
 MODEL = "gpt-4o-mini"
 TEMPERATURE = 0.7  # Lower = more deterministic, better for reliability
 MAX_TOKENS = 600

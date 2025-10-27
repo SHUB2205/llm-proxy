@@ -1,0 +1,51 @@
+Index,Prompt Score,Response Score,Status,Latency (ms),Cost ($),Tokens,Hallucination Flags,Recommendation
+1,0.50,0.70,200,10489,0.0001,332,0,"✓ ACCEPT - Response reliable, but improve prompt for future requests."
+2,0.50,0.80,200,4207,0.0000,127,0,"✓ ACCEPT - Response reliable, but improve prompt for future requests."
+3,0.30,0.70,200,41646,0.0003,674,0,"✓ ACCEPT - Response reliable, but improve prompt for future requests."
+4,0.50,0.70,200,6720,0.0001,332,0,"✓ ACCEPT - Response reliable, but improve prompt for future requests."
+5,0.50,0.60,200,32403,0.0001,261,0,"✓ ACCEPT - Response reliable, but improve prompt for future requests."
+6,0.50,0.60,200,63279,0.0001,134,0,"✓ ACCEPT - Response reliable, but improve prompt for future requests."
+7,0.50,0.80,200,41775,0.0002,441,0,"✓ ACCEPT - Response reliable, but improve prompt for future requests."
+8,0.50,0.90,200,63273,0.0000,126,0,"✓ ACCEPT - Response reliable, but improve prompt for future requests."
+9,0.50,0.65,200,69707,0.0003,674,0,"✓ ACCEPT - Response reliable, but improve prompt for future requests."
+10,0.50,0.60,200,68701,0.0001,363,0,"✓ ACCEPT - Response reliable, but improve prompt for future requests."
+11,0.50,0.60,200,65274,0.0001,262,0,"✓ ACCEPT - Response reliable, but improve prompt for future requests."
+12,0.50,0.50,200,53536,0.0000,118,0,⚠️ REVIEW - Moderate reliability. Verify key facts before using.
+13,0.50,0.70,200,41403,0.0002,417,0,"✓ ACCEPT - Response reliable, but improve prompt for future requests."
+14,0.50,0.50,200,53353,0.0000,89,0,⚠️ REVIEW - Moderate reliability. Verify key facts before using.
+15,0.50,0.75,200,48274,0.0003,674,0,"✓ ACCEPT - Response reliable, but improve prompt for future requests."
+16,0.50,0.70,200,63937,0.0001,320,0,"✓ ACCEPT - Response reliable, but improve prompt for future requests."
+17,0.50,0.60,200,59595,0.0001,258,0,"✓ ACCEPT - Response reliable, but improve prompt for future requests."
+18,0.50,0.50,200,56732,0.0000,120,0,⚠️ REVIEW - Moderate reliability. Verify key facts before using.
+19,0.50,0.90,200,63141,0.0002,444,0,"✓ ACCEPT - Response reliable, but improve prompt for future requests."
+20,0.50,0.70,200,56104,0.0000,108,0,"✓ ACCEPT - Response reliable, but improve prompt for future requests."
+21,0.50,0.60,200,64944,0.0003,674,0,"✓ ACCEPT - Response reliable, but improve prompt for future requests."
+22,0.50,0.60,200,59513,0.0001,327,0,"✓ ACCEPT - Response reliable, but improve prompt for future requests."
+23,0.50,0.60,200,56852,0.0001,237,0,"✓ ACCEPT - Response reliable, but improve prompt for future requests."
+24,0.50,0.50,200,53575,0.0000,121,0,⚠️ REVIEW - Moderate reliability. Verify key facts before using.
+25,0.50,0.60,200,45669,0.0002,470,0,"✓ ACCEPT - Response reliable, but improve prompt for future requests."
+26,0.50,0.50,200,36740,0.0000,87,0,⚠️ REVIEW - Moderate reliability. Verify key facts before using.
+27,0.50,0.70,200,75442,0.0003,674,0,"✓ ACCEPT - Response reliable, but improve prompt for future requests."
+28,0.50,0.60,200,58448,0.0001,335,0,"✓ ACCEPT - Response reliable, but improve prompt for future requests."
+29,0.50,0.60,200,57465,0.0001,267,0,"✓ ACCEPT - Response reliable, but improve prompt for future requests."
+30,0.50,0.50,200,32537,0.0000,122,0,⚠️ REVIEW - Moderate reliability. Verify key facts before using.
+31,0.50,0.75,200,37206,0.0002,552,0,"✓ ACCEPT - Response reliable, but improve prompt for future requests."
+32,0.50,0.95,200,53848,0.0000,131,0,"✓ ACCEPT - Response reliable, but improve prompt for future requests."
+33,0.50,0.60,200,69279,0.0003,674,0,"✓ ACCEPT - Response reliable, but improve prompt for future requests."
+34,0.50,0.70,200,54431,0.0001,341,0,"✓ ACCEPT - Response reliable, but improve prompt for future requests."
+35,0.50,0.60,200,52654,0.0001,266,0,"✓ ACCEPT - Response reliable, but improve prompt for future requests."
+36,0.50,0.50,200,47984,0.0000,119,0,⚠️ REVIEW - Moderate reliability. Verify key facts before using.
+37,0.50,0.60,200,57373,0.0002,468,0,"✓ ACCEPT - Response reliable, but improve prompt for future requests."
+38,0.50,0.50,200,46032,0.0000,87,0,⚠️ REVIEW - Moderate reliability. Verify key facts before using.
+39,0.50,0.70,200,56556,0.0003,674,0,"✓ ACCEPT - Response reliable, but improve prompt for future requests."
+40,0.50,0.70,200,48908,0.0001,374,0,"✓ ACCEPT - Response reliable, but improve prompt for future requests."
+41,0.50,0.60,200,46858,0.0001,261,0,"✓ ACCEPT - Response reliable, but improve prompt for future requests."
+42,0.50,0.50,200,42748,0.0000,118,0,⚠️ REVIEW - Moderate reliability. Verify key facts before using.
+43,0.50,0.70,200,58040,0.0002,478,0,"✓ ACCEPT - Response reliable, but improve prompt for future requests."
+44,0.50,0.70,200,43115,0.0000,106,0,"✓ ACCEPT - Response reliable, but improve prompt for future requests."
+45,0.50,0.75,200,55514,0.0003,674,0,"✓ ACCEPT - Response reliable, but improve prompt for future requests."
+46,0.50,0.70,200,43542,0.0001,318,0,"✓ ACCEPT - Response reliable, but improve prompt for future requests."
+47,0.50,0.60,200,43054,0.0001,267,0,"✓ ACCEPT - Response reliable, but improve prompt for future requests."
+48,0.50,0.50,200,38563,0.0000,124,0,⚠️ REVIEW - Moderate reliability. Verify key facts before using.
+49,0.50,0.70,200,47716,0.0002,542,0,"✓ ACCEPT - Response reliable, but improve prompt for future requests."
+50,0.50,0.70,200,38186,0.0000,106,0,"✓ ACCEPT - Response reliable, but improve prompt for future requests."
