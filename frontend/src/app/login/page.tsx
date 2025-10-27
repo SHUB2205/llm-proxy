@@ -85,9 +85,9 @@ export default function LoginPage() {
 
         <div className="mt-6 text-center text-sm text-gray-400">
           Don't have an account?{' '}
-          <a href="/onboard" className="text-indigo-400 hover:text-indigo-300">
+          <button onClick={() => router.push('/onboard')} className="text-indigo-400 hover:text-indigo-300 underline">
             Get Started
-          </a>
+          </button>
         </div>
       </div>
     </div>

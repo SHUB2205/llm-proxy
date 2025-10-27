@@ -41,9 +41,9 @@ export default function OnboardPage() {
       })
 
       // Save credentials
-      login(response.data.proxy_key, formData.email)
+      login((response.data as any).proxy_key, formData.email)
       
-      setResult(response.data)
+      setResult(response.data as any)
       setStep(2)
     } catch (err: any) {
       setError(err.response?.data?.detail || 'Registration failed. Please try again.')
@@ -229,9 +229,9 @@ print(result["observability"])  # View flags`}
 
         <div className="mt-6 text-center text-sm text-gray-400">
           Already have an account?{' '}
-          <a href="/login" className="text-indigo-400 hover:text-indigo-300">
+          <button onClick={() => router.push('/login')} className="text-indigo-400 hover:text-indigo-300 underline">
             Sign in
-          </a>
+          </button>
         </div>
       </div>
     </div>

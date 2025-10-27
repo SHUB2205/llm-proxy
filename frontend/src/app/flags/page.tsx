@@ -53,7 +53,7 @@ export default function FlagsPage() {
         headers: { Authorization: `Bearer ${proxyKey}` }
       })
 
-      setFlags(response.data.flags || [])
+      setFlags((response.data as any)?.flags || [])
     } catch (error) {
       console.error('Error loading flags:', error)
     } finally {
@@ -205,12 +205,12 @@ export default function FlagsPage() {
                     <span className="text-sm text-gray-400">
                       Confidence: {(flag.confidence_score * 100).toFixed(1)}%
                     </span>
-                    <a
-                      href={`/runs/${flag.run_id}`}
-                      className="text-sm text-indigo-400 hover:text-indigo-300"
+                    <button
+                      onClick={() => router.push(`/runs/${flag.run_id}`)}
+                      className="text-sm text-indigo-400 hover:text-indigo-300 underline cursor-pointer"
                     >
                       View Request →
-                    </a>
+                    </button>
                   </div>
                 </div>
 

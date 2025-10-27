@@ -36,7 +36,7 @@ export default function Dashboard() {
         })
       ])
       setStats(statsData.data)
-      setRecentRuns(runsData.data.runs || [])
+      setRecentRuns((runsData.data as any)?.runs || [])
     } catch (error) {
       console.error('Error fetching dashboard data:', error)
     } finally {
@@ -150,12 +150,12 @@ export default function Dashboard() {
             <p className="text-sm text-gray-400 mt-1">Your latest API calls</p>
           </div>
           
-          <a
-            href="/runs"
+          <button
+            onClick={() => router.push('/runs')}
             className="px-4 py-2 bg-indigo-600 text-white rounded-xl hover:bg-indigo-700 transition-colors text-sm font-medium"
           >
             View all
-          </a>
+          </button>
         </div>
 
         <div className="divide-y divide-slate-700">
@@ -168,10 +168,10 @@ export default function Dashboard() {
           ) : (
             recentRuns.map((req) => (
               
-              <a
+              <div
                 key={req.id}
-                href={`/runs/${req.id}`}
-                className="block p-5 hover:bg-gradient-to-r hover:from-indigo-900/30 hover:to-purple-900/30 transition-all group"
+                onClick={() => router.push(`/runs/${req.id}`)}
+                className="block p-5 hover:bg-gradient-to-r hover:from-indigo-900/30 hover:to-purple-900/30 transition-all group cursor-pointer"
               >
                 <div className="flex items-center justify-between">
                   <div>
@@ -195,7 +195,7 @@ export default function Dashboard() {
                     </div>
                   </div>
                 </div>
-              </a>
+              </div>
             ))
           )}
         </div>
