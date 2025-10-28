@@ -26,8 +26,8 @@ export default function FinOpsPage() {
     if (!proxyKey) return
     
     try {
-      // Try to fetch FinOps data
-      const [overviewRes, agentsRes, modelsRes] = await Promise.all([
+      // Try to fetch FinOps data, fallback to basic stats
+      const [overviewRes, agentsRes, modelsRes, statsRes] = await Promise.all([
         axios.get(`${API_URL}/v1/finops/dashboard/overview?organization_id=default&period=30d`, {
           headers: { 'Authorization': `Bearer ${proxyKey}` }
         }).catch(() => null),
@@ -37,11 +37,48 @@ export default function FinOpsPage() {
         axios.get(`${API_URL}/v1/finops/analytics/models?organization_id=default`, {
           headers: { 'Authorization': `Bearer ${proxyKey}` }
         }).catch(() => null),
+        axios.get(`${API_URL}/v1/stats`, {
+          headers: { 'Authorization': `Bearer ${proxyKey}` }
+        }).catch(() => null),
       ])
       
-      setOverview(overviewRes?.data)
+      // If FinOps data exists, use it
+      if (overviewRes?.data) {
+        setOverview(overviewRes.data)
+      } else if (statsRes?.data) {
+        // Fallback: convert basic stats to FinOps format
+        const stats = statsRes.data
+        setOverview({
+          summary: {
+            total_cost_usd: stats.last_24h?.total_cost || 0,
+            total_tokens: stats.last_24h?.total_tokens || 0,
+            total_calls: stats.last_24h?.total_requests || 0,
+            avg_cost_per_call: stats.last_24h?.total_requests > 0 
+              ? (stats.last_24h?.total_cost || 0) / stats.last_24h.total_requests 
+              : 0
+          },
+          optimization: {
+            opportunities_count: 0,
+            potential_savings_usd: 0
+          }
+        })
+        
+        // Convert model stats to FinOps format
+        if (stats.by_model && stats.by_model.length > 0) {
+          const modelData: any = {}
+          stats.by_model.forEach((m: any) => {
+            modelData[m.model] = {
+              cost: m.cost || 0,
+              calls: m.count || 0,
+              input_tokens: Math.floor((m.tokens || 0) * 0.4), // Estimate
+              output_tokens: Math.floor((m.tokens || 0) * 0.6)
+            }
+          })
+          setModels({ models: modelData })
+        }
+      }
+      
       setAgents(agentsRes?.data)
-      setModels(modelsRes?.data)
     } catch (error) {
       console.error('Error fetching FinOps data:', error)
     } finally {
