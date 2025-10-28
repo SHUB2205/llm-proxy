@@ -2,6 +2,7 @@
 import { useState, useEffect } from 'react'
 import { useAuth } from '@/contexts/AuthContext'
 import { useRouter } from 'next/navigation'
+import Link from 'next/link'
 
 export default function SettingsPage() {
   const { isAuthenticated, userEmail, proxyKey, logout } = useAuth()
@@ -94,38 +95,46 @@ print(response.choices[0].message.content)`}
         <div className="bg-slate-800/70 backdrop-blur-xl rounded-2xl shadow-lg border border-slate-700 p-6 mb-6">
           <h2 className="text-2xl font-bold text-white mb-4">Quick Links</h2>
           <div className="grid grid-cols-2 gap-4">
-            <a
+            <Link
               href="/"
               className="p-4 bg-slate-900/50 hover:bg-slate-900 rounded-lg transition-colors"
             >
               <div className="text-2xl mb-2">📊</div>
               <div className="font-semibold text-white">Dashboard</div>
               <div className="text-sm text-gray-400">View analytics</div>
-            </a>
-            <a
+            </Link>
+            <Link
+              href="/settings/detection"
+              className="p-4 bg-indigo-900/30 hover:bg-indigo-900/50 border border-indigo-500/30 rounded-lg transition-colors"
+            >
+              <div className="text-2xl mb-2">🔬</div>
+              <div className="font-semibold text-white">Detection Settings</div>
+              <div className="text-sm text-indigo-300">Configure hallucination detection</div>
+            </Link>
+            <Link
               href="/finops"
               className="p-4 bg-slate-900/50 hover:bg-slate-900 rounded-lg transition-colors"
             >
               <div className="text-2xl mb-2">💰</div>
               <div className="font-semibold text-white">FinOps</div>
               <div className="text-sm text-gray-400">Track spending</div>
-            </a>
-            <a
+            </Link>
+            <Link
               href="/flags"
               className="p-4 bg-slate-900/50 hover:bg-slate-900 rounded-lg transition-colors"
             >
               <div className="text-2xl mb-2">🚨</div>
               <div className="font-semibold text-white">Flags</div>
               <div className="text-sm text-gray-400">View hallucinations</div>
-            </a>
-            <a
+            </Link>
+            <Link
               href="/optimizer"
               className="p-4 bg-slate-900/50 hover:bg-slate-900 rounded-lg transition-colors"
             >
               <div className="text-2xl mb-2">🎯</div>
               <div className="font-semibold text-white">Optimizer</div>
               <div className="text-sm text-gray-400">Optimize prompts</div>
-            </a>
+            </Link>
           </div>
         </div>
 

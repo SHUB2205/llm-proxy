@@ -25,6 +25,7 @@ from database import (
     get_flag_stats
 )
 from hallucination_detector import HallucinationDetector, calculate_overall_risk_score
+from advanced_detection import AdvancedHallucinationDetector, DetectionConfig
 
 # Import enterprise features
 try:
@@ -70,8 +71,9 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Initialize detector
-detector = HallucinationDetector()
+# Initialize detectors
+detector = HallucinationDetector()  # Keep for backward compatibility
+advanced_detector = AdvancedHallucinationDetector(DetectionConfig.balanced())  # New advanced detector
 
 # Include enterprise router if available
 if ENTERPRISE_ENABLED:
@@ -302,13 +304,31 @@ async def proxy_chat_completions(
         if "choices" in result and len(result["choices"]) > 0:
             response_text = result["choices"][0]["message"]["content"]
         
-        # Run hallucination detection
+        # Run ADVANCED hallucination detection
         flags = []
+        advanced_result = None
         if response_text:
+            # Run basic detection for backward compatibility
             flags = detector.analyze(prompt_text, response_text, body.get("model", "unknown"))
+            
+            # Run advanced detection
+            try:
+                advanced_result = await advanced_detector.detect(
+                    question=prompt_text,
+                    answer=response_text,
+                    openai_key=openai_key,
+                    context=body.get("context", None)  # Optional RAG context
+                )
+            except Exception as e:
+                print(f"⚠️  Advanced detection failed: {e}")
+                advanced_result = None
         
-        # Calculate risk score
-        risk_score, risk_level = calculate_overall_risk_score(flags)
+        # Calculate risk score (use advanced if available, fallback to basic)
+        if advanced_result:
+            risk_score = advanced_result["risk_probability"]
+            risk_level = advanced_result["risk_level"]
+        else:
+            risk_score, risk_level = calculate_overall_risk_score(flags)
         
         # Log to database with flags
         await log_request_with_flags(
@@ -362,16 +382,34 @@ async def proxy_chat_completions(
             cost_usd = (input_tokens * 0.00015 / 1000) + (output_tokens * 0.0006 / 1000)
         
         # Add observability metadata to response
+        observability_data = {
+            "flags_detected": len(flags),
+            "risk_score": risk_score,
+            "risk_level": risk_level,
+            "flags": flags if flags else [],
+            "cost_usd": cost_usd,
+            "tokens": result.get("usage", {})
+        }
+        
+        # Add advanced detection results if available
+        if advanced_result:
+            observability_data["advanced_detection"] = {
+                "risk_level": advanced_result["risk_level"],
+                "risk_probability": advanced_result["risk_probability"],
+                "action": advanced_result["action"],
+                "explanation": advanced_result["explanation"],
+                "checks_run": advanced_result.get("checks_run", []),
+                "issues_found": advanced_result.get("issues_found", []),
+                # Include detailed results
+                "semantic_entropy": advanced_result.get("semantic_entropy"),
+                "claims": advanced_result.get("claims"),
+                "llm_judge": advanced_result.get("llm_judge"),
+                "self_consistency": advanced_result.get("self_consistency")
+            }
+        
         return {
             "run_id": run_id,
-            "observability": {
-                "flags_detected": len(flags),
-                "risk_score": risk_score,
-                "risk_level": risk_level,
-                "flags": flags if flags else [],
-                "cost_usd": cost_usd,
-                "tokens": result.get("usage", {})
-            },
+            "observability": observability_data,
             **result
         }
     
@@ -552,6 +590,62 @@ async def get_dashboard(
         "stats": stats,
         "recent_flagged_runs": flagged_runs.data if flagged_runs.data else [],
         "unresolved_flags": unresolved_flags
+    }
+
+
+# ============================================
+# Advanced Detection Configuration
+# ============================================
+
+@app.get("/v1/detection/config")
+async def get_detection_config(
+    user_context: dict = Depends(verify_proxy_key)
+):
+    """Get current advanced detection configuration"""
+    return {
+        "mode": "balanced",
+        "available_modes": ["fast", "balanced", "thorough"],
+        "current_config": {
+            "use_semantic_entropy": True,
+            "use_claim_nli": True,
+            "use_llm_judge": True,
+            "use_self_consistency": True,
+            "entropy_threshold": 0.5,
+            "claim_support_threshold": 0.7
+        },
+        "mode_descriptions": {
+            "fast": "Semantic entropy only (~200ms) - Quick uncertainty detection",
+            "balanced": "Entropy + NLI + Judge (~2-3s) - Recommended for production",
+            "thorough": "All checks + self-consistency (~5-7s) - Maximum accuracy"
+        }
+    }
+
+
+@app.post("/v1/detection/config")
+async def update_detection_config(
+    request: Request,
+    user_context: dict = Depends(verify_proxy_key)
+):
+    """Update advanced detection configuration"""
+    global advanced_detector
+    
+    body = await request.json()
+    mode = body.get("mode", "balanced")
+    
+    # Update detector with new config
+    if mode == "fast":
+        config = DetectionConfig.fast()
+    elif mode == "thorough":
+        config = DetectionConfig.thorough()
+    else:
+        config = DetectionConfig.balanced()
+    
+    advanced_detector = AdvancedHallucinationDetector(config)
+    
+    return {
+        "success": True,
+        "mode": mode,
+        "message": f"Detection mode updated to '{mode}'"
     }
 
 

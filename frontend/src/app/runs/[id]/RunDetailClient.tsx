@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import axios from 'axios'
 import { useAuth } from '@/contexts/AuthContext'
+import AdvancedDetectionPanel from '@/components/AdvancedDetectionPanel'
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'
 
@@ -65,6 +66,7 @@ export default function RunDetailClient({ id }: { id: string }) {
   const messages = payload?.messages || []
   const response = payload?.response || ''
   const flags = run.flags || []
+  const advancedDetection = run.observability?.advanced_detection
 
   return (
     <div className="p-8 min-h-screen bg-[#0f172a] text-gray-100">
@@ -89,6 +91,11 @@ export default function RunDetailClient({ id }: { id: string }) {
           <StatCard label="Cost" value={`$${run.cost_usd?.toFixed(5) || '0.00000'}`} icon="💰" />
           <StatCard label="Latency" value={`${run.latency_ms}ms`} icon="⚡" />
         </div>
+
+        {/* Advanced Detection Panel */}
+        {advancedDetection && (
+          <AdvancedDetectionPanel detection={advancedDetection} />
+        )}
 
         {/* Flags Section (if any) */}
         {flags.length > 0 && (
