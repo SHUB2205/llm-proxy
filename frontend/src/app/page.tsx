@@ -12,6 +12,8 @@ export default function Dashboard() {
   const [stats, setStats] = useState<any>(null)
   const [recentRuns, setRecentRuns] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
+  const [showWelcome, setShowWelcome] = useState(true)
+  const [timeRange, setTimeRange] = useState('24h')
 
   useEffect(() => {
     if (!isAuthenticated || !proxyKey) {
@@ -21,14 +23,14 @@ export default function Dashboard() {
     loadData()
     const interval = setInterval(loadData, 30000)
     return () => clearInterval(interval)
-  }, [isAuthenticated, proxyKey])
+  }, [isAuthenticated, proxyKey, timeRange])
 
   const loadData = async () => {
     if (!proxyKey) return
     
     try {
       const [statsData, runsData] = await Promise.all([
-        axios.get(`${API_URL}/v1/stats`, {
+        axios.get(`${API_URL}/v1/stats?time_range=${timeRange}`, {
           headers: { 'Authorization': `Bearer ${proxyKey}` }
         }),
         axios.get(`${API_URL}/v1/runs?limit=5`, {
@@ -42,6 +44,17 @@ export default function Dashboard() {
     } finally {
       setLoading(false)
     }
+  }
+
+  const getTimeRangeLabel = () => {
+    const labels: Record<string, string> = {
+      '1h': 'Last hour',
+      '24h': 'Last 24 hours',
+      '7d': 'Last 7 days',
+      '30d': 'Last 30 days',
+      'all': 'All time'
+    }
+    return labels[timeRange] || 'Last 24 hours'
   }
 
   const handleLogout = () => {
@@ -61,7 +74,7 @@ export default function Dashboard() {
     {
       label: 'Total Requests',
       value: stats?.last_24h?.total_requests || 0,
-      subtitle: 'Last 24 hours',
+      subtitle: getTimeRangeLabel(),
       color: 'from-indigo-500 to-blue-600',
       icon: '📊',
     },
@@ -75,7 +88,7 @@ export default function Dashboard() {
     {
       label: 'Total Cost',
       value: `$${(stats?.last_24h?.total_cost || 0).toFixed(4)}`,
-      subtitle: 'USD in last 24h',
+      subtitle: `USD in ${getTimeRangeLabel().toLowerCase()}`,
       color: 'from-green-500 to-emerald-600',
       icon: '💰',
     },
@@ -89,24 +102,35 @@ export default function Dashboard() {
   ]
 
   return (
-    <div className="p-8 pb-16 min-h-screen bg-[#0f172a] text-gray-100">
+    <div className="pt-20 px-8 pb-16 min-h-screen bg-[#0f172a] text-gray-100">
       {/* Welcome Banner with Logout */}
-      <div className="mb-6 bg-gradient-to-r from-indigo-500/20 to-purple-500/20 border border-indigo-500/50 rounded-2xl p-6">
-        <div className="flex items-center justify-between">
-          <div>
-            <h2 className="text-xl font-bold text-white mb-1">Welcome back! 👋</h2>
-            <p className="text-gray-300 text-sm">
-              Logged in as <span className="font-semibold text-indigo-300">{userEmail}</span>
-            </p>
-          </div>
+      {showWelcome && (
+        <div className="mb-6 bg-gradient-to-r from-indigo-500/20 to-purple-500/20 border border-indigo-500/50 rounded-2xl p-6 relative">
           <button
-            onClick={handleLogout}
-            className="px-4 py-2 bg-red-500/20 hover:bg-red-500/30 border border-red-500/50 text-red-300 rounded-xl transition-colors text-sm font-medium"
+            onClick={() => setShowWelcome(false)}
+            className="absolute top-4 right-4 text-gray-400 hover:text-white transition-colors"
+            aria-label="Close welcome banner"
           >
-            Logout
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            </svg>
           </button>
+          <div className="flex items-center justify-between pr-8">
+            <div>
+              <h2 className="text-xl font-bold text-white mb-1">Welcome back!</h2>
+              <p className="text-gray-300 text-sm">
+                Logged in as <span className="font-semibold text-indigo-300">{userEmail}</span>
+              </p>
+            </div>
+            <button
+              onClick={handleLogout}
+              className="px-4 py-2 bg-red-500/20 hover:bg-red-500/30 border border-red-500/50 text-red-300 rounded-xl transition-colors text-sm font-medium"
+            >
+              Logout
+            </button>
+          </div>
         </div>
-      </div>
+      )}
 
       {/* Header */}
       <div className="mb-10 flex items-center justify-between">
@@ -114,10 +138,27 @@ export default function Dashboard() {
           <h1 className="text-4xl font-bold text-white tracking-tight">Dashboard</h1>
           <p className="text-gray-400">Monitor your LLM usage in real-time</p>
         </div>
-        <div className="text-right">
-          <div className="text-sm text-gray-500">Last updated</div>
-          <div className="text-lg font-semibold text-gray-100">
-            {new Date().toLocaleTimeString()}
+        <div className="flex items-center gap-4">
+          {/* Time Range Selector */}
+          <div>
+            <label className="text-sm text-gray-500 block mb-2">Time Range</label>
+            <select
+              value={timeRange}
+              onChange={(e) => setTimeRange(e.target.value)}
+              className="px-4 py-2 bg-slate-800 border border-slate-700 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            >
+              <option value="1h">Last Hour</option>
+              <option value="24h">Last 24 Hours</option>
+              <option value="7d">Last 7 Days</option>
+              <option value="30d">Last 30 Days</option>
+              <option value="all">All Time</option>
+            </select>
+          </div>
+          <div className="text-right">
+            <div className="text-sm text-gray-500">Last updated</div>
+            <div className="text-lg font-semibold text-gray-100">
+              {new Date().toLocaleTimeString()}
+            </div>
           </div>
         </div>
       </div>
@@ -133,7 +174,7 @@ export default function Dashboard() {
             <div className="relative flex flex-col justify-between h-full">
               <div className="flex items-center justify-between mb-1">
                 <div className="text-sm text-gray-400">{stat.label}</div>
-                <span className="text-2xl">{stat.icon}</span>
+                {/*<span className="text-2xl">{stat.icon}</span>*/}
               </div>
               <div className="text-4xl font-bold text-white mb-1">{stat.value}</div>
               <div className="text-xs text-gray-500">{stat.subtitle}</div>

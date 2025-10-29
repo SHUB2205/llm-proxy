@@ -46,7 +46,7 @@ export default function RunDetailClient({ id }: { id: string }) {
 
   if (!run) {
     return (
-      <div className="p-8 min-h-screen bg-[#0f172a]">
+      <div className="pt-20 px-8 pb-16 min-h-screen bg-[#0f172a]">
         <div className="max-w-4xl mx-auto">
           <button
             onClick={() => router.push('/runs')}
@@ -69,7 +69,7 @@ export default function RunDetailClient({ id }: { id: string }) {
   const advancedDetection = run.observability?.advanced_detection
 
   return (
-    <div className="p-8 min-h-screen bg-[#0f172a] text-gray-100">
+    <div className="pt-20 px-8 pb-16 min-h-screen bg-[#0f172a] text-gray-100">
       <div className="max-w-5xl mx-auto">
         {/* Header */}
         <button

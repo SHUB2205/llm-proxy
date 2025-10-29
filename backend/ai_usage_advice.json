@@ -7,7 +7,7 @@
   },
   {
     "category": "Response Verification",
-    "issue": "12 responses had low reliability",
+    "issue": "23 responses had low reliability",
     "recommendation": "Implement mandatory human review for responses with score < 0.6",
     "impact": "Prevents unreliable information from reaching users"
   }

@@ -69,9 +69,9 @@ export default function TestPage() {
   }
 
   return (
-    <div className="p-8 min-h-screen bg-[#0f172a] text-gray-100">
+    <div className="pt-20 px-8 pb-16 min-h-screen bg-[#0f172a] text-gray-100">
       <div className="max-w-4xl mx-auto">
-        <h1 className="text-4xl font-bold text-white mb-2">🧪 Test Request</h1>
+        <h1 className="text-4xl font-bold text-white mb-2">Test Request</h1>
         <p className="text-gray-400 mb-8">Send a test request to see advanced detection in action</p>
 
         {/* Input */}
