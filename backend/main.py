@@ -54,6 +54,24 @@ except ImportError:
     finops_tracker = None
     print("⚠️  AI FinOps features not available. Install dependencies or check ai_finops_api.py")
 
+# Import Drift Detection features
+try:
+    from drift_api import router as drift_router
+    from drift_detection.drift_monitor import drift_monitor
+    DRIFT_ENABLED = True
+except ImportError:
+    DRIFT_ENABLED = False
+    drift_monitor = None
+    print("⚠️  Drift Detection features not available. Install dependencies or check drift_api.py")
+
+# Import Waitlist API (public endpoint)
+try:
+    from waitlist_api import router as waitlist_router
+    WAITLIST_ENABLED = True
+except ImportError:
+    WAITLIST_ENABLED = False
+    print("⚠️  Waitlist API not available. Install dependencies or check waitlist_api.py")
+
 load_dotenv()
 
 app = FastAPI(
@@ -89,6 +107,16 @@ if RELIABILITY_ENABLED:
 if FINOPS_ENABLED:
     app.include_router(finops_router)
     print("✅ AI FinOps & Advanced Observability enabled")
+
+# Include Drift Detection router
+if DRIFT_ENABLED:
+    app.include_router(drift_router)
+    print("✅ Drift Detection enabled")
+
+# Include Waitlist router (public, no auth)
+if WAITLIST_ENABLED:
+    app.include_router(waitlist_router)
+    print("✅ Waitlist API enabled")
 
 
 # ============================================
@@ -349,11 +377,13 @@ async def proxy_chat_completions(
                 
                 # Start workflow if not exists
                 workflow_id = f"user_{user_id}_session"
+                session_id = user_context.get("users", {}).get("id", user_id)
                 if workflow_id not in finops_tracker.active_workflows:
-                    finops_tracker.start_workflow(
+                    await finops_tracker.start_workflow(
                         workflow_id=workflow_id,
                         workflow_name="API Requests",
-                        organization_id=organization_id
+                        user_id=user_id,
+                        session_id=session_id
                     )
                 
                 # Track the call
@@ -511,22 +541,35 @@ async def resolve_flag_endpoint(
 
 @app.get("/v1/stats")
 async def get_stats(
+    time_range: str = "24h",
     user_context: dict = Depends(verify_proxy_key)
 ):
     """Get aggregate statistics for authenticated user"""
     user_id = user_context["users"]["id"]
     
     now = datetime.utcnow()
-    since = (now - timedelta(hours=24)).isoformat()
     
-    # Fetch runs created in last 24 hours
-    result = (
-        supabase.table("runs")
-        .select("*")
-        .eq("user_id", user_id)
-        .gte("created_at", since)
-        .execute()
-    )
+    # Calculate time delta based on time_range
+    if time_range == "1h":
+        since = (now - timedelta(hours=1)).isoformat()
+    elif time_range == "24h":
+        since = (now - timedelta(hours=24)).isoformat()
+    elif time_range == "7d":
+        since = (now - timedelta(days=7)).isoformat()
+    elif time_range == "30d":
+        since = (now - timedelta(days=30)).isoformat()
+    elif time_range == "all":
+        since = None  # No time filter
+    else:
+        since = (now - timedelta(hours=24)).isoformat()
+    
+    # Fetch runs based on time range
+    query = supabase.table("runs").select("*").eq("user_id", user_id)
+    
+    if since:
+        query = query.gte("created_at", since)
+    
+    result = query.execute()
     
     runs = result.data or []
     total_requests = len(runs)

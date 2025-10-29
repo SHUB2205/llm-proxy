@@ -42,11 +42,11 @@ export default function OptimizerPage() {
   }
 
   return (
-    <div className="p-8 min-h-screen bg-[#0f172a] text-gray-100">
+    <div className="pt-20 px-8 pb-16 min-h-screen bg-[#0f172a] text-gray-100">
       <div className="max-w-6xl mx-auto">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-4xl font-bold text-white mb-2">🎯 Prompt Optimizer</h1>
+          <h1 className="text-4xl font-bold text-white mb-2">Prompt Optimizer</h1>
           <p className="text-gray-400">Analyze and optimize your prompts for better reliability</p>
         </div>
 
