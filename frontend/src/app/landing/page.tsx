@@ -2,9 +2,11 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Image from 'next/image'
+import { useTheme } from '@/contexts/ThemeContext'
 
 export default function LandingPage() {
   const router = useRouter()
+  const { theme, toggleTheme } = useTheme()
   const [email, setEmail] = useState('')
   const [loading, setLoading] = useState(false)
   const [submitted, setSubmitted] = useState(false)
@@ -37,34 +39,49 @@ export default function LandingPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#0a0a0f] text-white overflow-hidden">
+    <div className={`min-h-screen overflow-hidden ${theme === 'light' ? 'bg-white text-black' : 'bg-[#0a0a0f] text-white'}`}>
       {/* Navigation */}
-      <nav className="fixed top-0 w-full z-50 bg-[#0a0a0f]/80 backdrop-blur-xl border-b border-white/5">
+      <nav className={`fixed top-0 w-full z-50 backdrop-blur-xl ${theme === 'light' ? 'bg-white/80 border-b border-gray-200' : 'bg-[#0a0a0f]/80 border-b border-white/5'}`}>
         <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <Image 
-              src="/logo_llm_proxy-removebg-preview.png" 
+              src={theme === 'light' ? '/modelsight_light_logo.png' : '/logo_llm_proxy-removebg-preview.png'}
               alt="ModelSight Logo" 
               width={80} 
               height={50}
               className="object-contain"
             />
-            <span className="text-2xl font-bold bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent">
+            <span className={`text-2xl font-bold ${theme === 'light' ? 'text-black' : 'bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent'}`}>
               ModelSight
             </span>
           </div>
           <div className="flex items-center gap-4">
-            <a href="#features" className="text-gray-400 hover:text-white transition-colors">Features</a>
-            <a href="#pricing" className="text-gray-400 hover:text-white transition-colors">Pricing</a>
+            <a href="#features" className={`transition-colors ${theme === 'light' ? 'text-gray-600 hover:text-black' : 'text-gray-400 hover:text-white'}`}>Features</a>
+            <a href="#pricing" className={`transition-colors ${theme === 'light' ? 'text-gray-600 hover:text-black' : 'text-gray-400 hover:text-white'}`}>Pricing</a>
+            <button
+              onClick={toggleTheme}
+              className={`p-2 rounded-lg transition-colors ${theme === 'light' ? 'text-gray-600 hover:bg-gray-100' : 'text-gray-400 hover:bg-white/10'}`}
+              aria-label="Toggle theme"
+            >
+              {theme === 'light' ? (
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+                </svg>
+              ) : (
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+                </svg>
+              )}
+            </button>
             <button
               onClick={() => router.push('/login')}
-              className="px-4 py-2 text-gray-400 hover:text-white transition-colors"
+              className={`px-4 py-2 transition-colors ${theme === 'light' ? 'text-gray-600 hover:text-black' : 'text-gray-400 hover:text-white'}`}
             >
               Sign In
             </button>
             <button
               onClick={() => router.push('/onboard')}
-              className="px-6 py-2 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 rounded-xl font-medium transition-all"
+              className={`px-6 py-2 rounded-xl font-medium transition-all ${theme === 'light' ? 'bg-black hover:bg-gray-800 text-white' : 'bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white'}`}
             >
               Get Started
             </button>

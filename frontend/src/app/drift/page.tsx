@@ -2,12 +2,14 @@
 import { useState, useEffect } from 'react'
 import axios from 'axios'
 import { useAuth } from '@/contexts/AuthContext'
+import { useTheme } from '@/contexts/ThemeContext'
 import { useRouter } from 'next/navigation'
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'
 
 export default function DriftPage() {
   const { isAuthenticated, proxyKey } = useAuth()
+  const { theme } = useTheme()
   const router = useRouter()
   const [loading, setLoading] = useState(true)
   const [stats, setStats] = useState<any>(null)
@@ -65,13 +67,13 @@ export default function DriftPage() {
 
   if (!isAuthenticated || !proxyKey) {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-[#0f172a]">
+      <div className={`flex items-center justify-center min-h-screen ${theme === 'light' ? 'bg-white' : 'bg-[#0f172a]'}`}>
         <div className="text-center">
-          <h1 className="text-2xl font-bold text-white mb-4">🔒 Please Log In</h1>
-          <p className="text-gray-400 mb-4">You need to be logged in to view drift detection</p>
+          <h1 className={`text-2xl font-bold mb-4 ${theme === 'light' ? 'text-black' : 'text-white'}`}>🔒 Please Log In</h1>
+          <p className={`mb-4 ${theme === 'light' ? 'text-gray-600' : 'text-gray-400'}`}>You need to be logged in to view drift detection</p>
           <button
             onClick={() => router.push('/login')}
-            className="px-6 py-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-medium"
+            className={`px-6 py-3 text-white rounded-xl font-medium ${theme === 'light' ? 'bg-black hover:bg-gray-800' : 'bg-indigo-600 hover:bg-indigo-700'}`}
           >
             Go to Login
           </button>
@@ -82,8 +84,8 @@ export default function DriftPage() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-[#0f172a]">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-500"></div>
+      <div className={`flex items-center justify-center min-h-screen ${theme === 'light' ? 'bg-white' : 'bg-[#0f172a]'}`}>
+        <div className={`animate-spin rounded-full h-12 w-12 border-b-2 ${theme === 'light' ? 'border-black' : 'border-indigo-500'}`}></div>
       </div>
     )
   }
@@ -96,17 +98,17 @@ export default function DriftPage() {
   }
 
   return (
-    <div className="pt-20 px-8 pb-16 min-h-screen bg-[#0f172a] text-gray-100">
+    <div className={`pt-20 px-8 pb-16 min-h-screen ${theme === 'light' ? 'bg-white text-black' : 'bg-[#0f172a] text-gray-100'}`}>
       {/* Header */}
       <div className="mb-8 flex items-center justify-between">
         <div>
-          <h1 className="text-4xl font-bold text-white mb-2">Drift Detection</h1>
-          <p className="text-gray-400">Monitor changes in LLM behavior over time</p>
+          <h1 className={`text-4xl font-bold mb-2 ${theme === 'light' ? 'text-black' : 'text-white'}`}>Drift Detection</h1>
+          <p className={theme === 'light' ? 'text-gray-600' : 'text-gray-400'}>Monitor changes in LLM behavior over time</p>
         </div>
         <button
           onClick={checkDrift}
           disabled={checkingDrift}
-          className="px-6 py-3 bg-indigo-600 hover:bg-indigo-700 disabled:bg-gray-600 text-white rounded-xl font-medium transition-colors"
+          className={`px-6 py-3 text-white rounded-xl font-medium transition-colors ${theme === 'light' ? 'bg-black hover:bg-gray-800 disabled:bg-gray-400' : 'bg-indigo-600 hover:bg-indigo-700 disabled:bg-gray-600'}`}
         >
           {checkingDrift ? 'Checking...' : 'Check Drift Now'}
         </button>
@@ -171,36 +173,40 @@ export default function DriftPage() {
           value={stats?.total_drifts || 0}
           icon="📊"
           color="from-indigo-500 to-blue-600"
+          theme={theme}
         />
         <StatCard
           label="Critical Drifts"
           value={stats?.critical_drifts || 0}
           icon="🚨"
           color="from-red-500 to-pink-600"
+          theme={theme}
         />
         <StatCard
           label="Last 24 Hours"
           value={stats?.recent_drifts_24h || 0}
           icon="⏰"
           color="from-orange-500 to-amber-600"
+          theme={theme}
         />
         <StatCard
           label="High Severity"
           value={stats?.high_drifts || 0}
           icon="⚠️"
           color="from-yellow-500 to-orange-600"
+          theme={theme}
         />
       </div>
 
       {/* Drift by Metric */}
       {stats?.drift_by_metric && Object.keys(stats.drift_by_metric).length > 0 && (
-        <div className="bg-slate-800/70 backdrop-blur-xl rounded-2xl shadow-lg border border-slate-700 p-6 mb-8">
-          <h2 className="text-2xl font-bold text-white mb-4">Drift by Metric</h2>
+        <div className={`rounded-2xl shadow-lg p-6 mb-8 ${theme === 'light' ? 'bg-white border border-gray-200' : 'bg-slate-800/70 backdrop-blur-xl border border-slate-700'}`}>
+          <h2 className={`text-2xl font-bold mb-4 ${theme === 'light' ? 'text-black' : 'text-white'}`}>Drift by Metric</h2>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             {Object.entries(stats.drift_by_metric).map(([metric, count]: [string, any]) => (
-              <div key={metric} className="bg-slate-900/50 rounded-lg p-4">
+              <div key={metric} className={`rounded-lg p-4 ${theme === 'light' ? 'bg-gray-50' : 'bg-slate-900/50'}`}>
                 <div className="text-sm text-gray-400 mb-1">{metric.replace(/_/g, ' ')}</div>
-                <div className="text-2xl font-bold text-white">{count}</div>
+                <div className={`text-2xl font-bold ${theme === 'light' ? 'text-black' : 'text-white'}`}>{count}</div>
               </div>
             ))}
           </div>
@@ -310,24 +316,24 @@ export default function DriftPage() {
       )}
 
       {/* Drift History */}
-      <div className="bg-slate-800/70 backdrop-blur-xl rounded-2xl shadow-lg border border-slate-700">
-        <div className="p-6 border-b border-slate-700">
-          <h2 className="text-2xl font-bold text-white">Drift History</h2>
-          <p className="text-sm text-gray-400 mt-1">Recent drift detections</p>
+      <div className={`rounded-2xl shadow-lg ${theme === 'light' ? 'bg-white border border-gray-200' : 'bg-slate-800/70 backdrop-blur-xl border border-slate-700'}`}>
+        <div className={`p-6 border-b ${theme === 'light' ? 'border-gray-200' : 'border-slate-700'}`}>
+          <h2 className={`text-2xl font-bold ${theme === 'light' ? 'text-black' : 'text-white'}`}>Drift History</h2>
+          <p className={`text-sm mt-1 ${theme === 'light' ? 'text-gray-600' : 'text-gray-400'}`}>Recent drift detections</p>
         </div>
 
-        <div className="divide-y divide-slate-700">
+        <div className={theme === 'light' ? 'divide-y divide-gray-200' : 'divide-y divide-slate-700'}>
           {history.length === 0 ? (
-            <div className="p-8 text-center text-gray-400">
+            <div className={`p-8 text-center ${theme === 'light' ? 'text-gray-600' : 'text-gray-400'}`}>
               No drift detected yet. Run "Check Drift Now" to start monitoring.
             </div>
           ) : (
             history.map((drift) => (
-              <div key={drift.id} className="p-5 hover:bg-slate-900/30 transition-colors">
+              <div key={drift.id} className={`p-5 transition-colors ${theme === 'light' ? 'hover:bg-gray-50' : 'hover:bg-slate-900/30'}`}>
                 <div className="flex items-center justify-between">
                   <div className="flex-1">
                     <div className="flex items-center gap-3 mb-2">
-                      <span className="font-semibold text-white">{drift.metric_name.replace(/_/g, ' ')}</span>
+                      <span className={`font-semibold ${theme === 'light' ? 'text-black' : 'text-white'}`}>{drift.metric_name.replace(/_/g, ' ')}</span>
                       <span className={`px-2 py-1 rounded text-xs border ${severityColors[drift.severity as keyof typeof severityColors]}`}>
                         {drift.severity}
                       </span>
@@ -345,7 +351,7 @@ export default function DriftPage() {
                     </div>
                     <button
                       onClick={() => setSelectedDrift(drift)}
-                      className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-sm font-medium transition-colors"
+                      className={`px-4 py-2 text-white rounded-lg text-sm font-medium transition-colors ${theme === 'light' ? 'bg-black hover:bg-gray-800' : 'bg-indigo-600 hover:bg-indigo-700'}`}
                     >
                       View Details
                     </button>
@@ -360,16 +366,20 @@ export default function DriftPage() {
   )
 }
 
-function StatCard({ label, value, icon, color }: any) {
+function StatCard({ label, value, icon, color, theme }: any) {
   return (
-    <div className="relative overflow-hidden rounded-2xl bg-slate-800/70 border border-slate-700 backdrop-blur-xl p-6 shadow-lg hover:shadow-indigo-500/10 transition-all duration-300 hover:-translate-y-1">
-      <div className={`absolute inset-0 bg-gradient-to-br ${color} opacity-10`}></div>
+    <div className={`relative overflow-hidden rounded-2xl p-6 shadow-lg transition-all duration-300 hover:-translate-y-1 ${
+      theme === 'light'
+        ? 'bg-white border border-gray-200 hover:shadow-gray-200'
+        : 'bg-slate-800/70 border border-slate-700 backdrop-blur-xl hover:shadow-indigo-500/10'
+    }`}>
+      {theme === 'dark' && <div className={`absolute inset-0 bg-gradient-to-br ${color} opacity-10`}></div>}
       <div className="relative flex flex-col justify-between h-full">
         <div className="flex items-center justify-between mb-1">
           <div className="text-sm text-gray-400">{label}</div>
           <span className="text-2xl">{icon}</span>
         </div>
-        <div className="text-4xl font-bold text-white mb-1">{value}</div>
+        <div className={`text-4xl font-bold mb-1 ${theme === 'light' ? 'text-black' : 'text-white'}`}>{value}</div>
       </div>
     </div>
   )

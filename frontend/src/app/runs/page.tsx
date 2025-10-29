@@ -3,12 +3,14 @@ import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import axios from 'axios'
 import { useAuth } from '@/contexts/AuthContext'
+import { useTheme } from '@/contexts/ThemeContext'
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'
 
 export default function RunsPage() {
   const router = useRouter()
   const { proxyKey, isAuthenticated } = useAuth()
+  const { theme } = useTheme()
   const [runs, setRuns] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
   const [filter, setFilter] = useState({
@@ -46,19 +48,19 @@ export default function RunsPage() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-[#0f172a]">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-500"></div>
+      <div className={`flex items-center justify-center min-h-screen ${theme === 'light' ? 'bg-white' : 'bg-[#0f172a]'}`}>
+        <div className={`animate-spin rounded-full h-12 w-12 border-b-2 ${theme === 'light' ? 'border-black' : 'border-indigo-500'}`}></div>
       </div>
     )
   }
 
   return (
-    <div className="p-8 bg-[#0f172a] min-h-screen text-white">
+    <div className={`p-8 min-h-screen ${theme === 'light' ? 'bg-white text-black' : 'bg-[#0f172a] text-white'}`}>
       {/* Header */}
       <div className="mb-8 flex items-center justify-between">
         <div>
-          <h1 className="text-4xl font-bold mb-2">All Requests</h1>
-          <p className="text-slate-400">View and filter your LLM API calls</p>
+          <h1 className={`text-4xl font-bold mb-2 ${theme === 'light' ? 'text-black' : 'text-white'}`}>All Requests</h1>
+          <p className={theme === 'light' ? 'text-gray-600' : 'text-slate-400'}>View and filter your LLM API calls</p>
         </div>
 
         {/* Filters */}
@@ -66,7 +68,11 @@ export default function RunsPage() {
           <select
             value={filter.model}
             onChange={(e) => setFilter({ ...filter, model: e.target.value })}
-            className="px-4 py-2 bg-slate-800 border border-slate-700 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            className={`px-4 py-2 rounded-xl focus:outline-none focus:ring-2 ${
+              theme === 'light'
+                ? 'bg-white border border-gray-300 text-black focus:ring-black'
+                : 'bg-slate-800 border border-slate-700 text-white focus:ring-indigo-500'
+            }`}
           >
             <option value="">All Models</option>
             <option value="gpt-4o">GPT-4o</option>
@@ -78,7 +84,11 @@ export default function RunsPage() {
           <select
             value={filter.limit}
             onChange={(e) => setFilter({ ...filter, limit: parseInt(e.target.value) })}
-            className="px-4 py-2 bg-slate-800 border border-slate-700 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            className={`px-4 py-2 rounded-xl focus:outline-none focus:ring-2 ${
+              theme === 'light'
+                ? 'bg-white border border-gray-300 text-black focus:ring-black'
+                : 'bg-slate-800 border border-slate-700 text-white focus:ring-indigo-500'
+            }`}
           >
             <option value={50}>50 results</option>
             <option value={100}>100 results</option>
@@ -93,28 +103,36 @@ export default function RunsPage() {
           label="Total Requests"
           value={runs.length}
           icon="📊"
+          theme={theme}
         />
         <SummaryStat
           label="Total Tokens"
           value={runs.reduce((sum, r) => sum + (r.total_tokens || 0), 0).toLocaleString()}
           icon="🎯"
+          theme={theme}
         />
         <SummaryStat
           label="Total Cost"
           value={`$${runs.reduce((sum, r) => sum + (r.cost_usd || 0), 0).toFixed(4)}`}
           icon="💰"
+          theme={theme}
         />
         <SummaryStat
           label="Avg Latency"
           value={`${Math.round(runs.reduce((sum, r) => sum + (r.latency_ms || 0), 0) / (runs.length || 1))}ms`}
           icon="⚡"
+          theme={theme}
         />
       </div>
 
       {/* Table */}
-      <div className="bg-slate-800/70 border border-slate-700 backdrop-blur-xl rounded-2xl shadow-lg overflow-hidden">
+      <div className={`rounded-2xl shadow-lg overflow-hidden ${
+        theme === 'light'
+          ? 'bg-white border border-gray-200'
+          : 'bg-slate-800/70 border border-slate-700 backdrop-blur-xl'
+      }`}>
         {runs.length === 0 ? (
-          <div className="p-12 text-center text-gray-400">
+          <div className={`p-12 text-center ${theme === 'light' ? 'text-gray-600' : 'text-gray-400'}`}>
             <div className="text-4xl mb-4">📭</div>
             <p className="text-lg font-medium mb-2">No requests found</p>
             <p className="text-sm">Try adjusting your filters or send some requests through the proxy</p>
@@ -122,32 +140,40 @@ export default function RunsPage() {
         ) : (
           <div className="overflow-x-auto">
             <table className="min-w-full text-sm">
-              <thead className="bg-slate-900/60 border-b border-slate-700">
+              <thead className={theme === 'light' ? 'bg-gray-50 border-b border-gray-200' : 'bg-slate-900/60 border-b border-slate-700'}>
                 <tr>
-                  <Th>Time</Th>
-                  <Th>Model</Th>
-                  <Th>Tokens</Th>
-                  <Th>Cost</Th>
-                  <Th>Latency</Th>
-                  <Th>Status</Th>
+                  <Th theme={theme}>Time</Th>
+                  <Th theme={theme}>Model</Th>
+                  <Th theme={theme}>Tokens</Th>
+                  <Th theme={theme}>Cost</Th>
+                  <Th theme={theme}>Latency</Th>
+                  <Th theme={theme}>Status</Th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-700">
+              <tbody className={theme === 'light' ? 'divide-y divide-gray-200' : 'divide-y divide-slate-700'}>
                 {runs.map((r) => (
                   <tr
                     key={r.id}
                     onClick={() => router.push(`/runs/${r.id}`)}
-                    className="cursor-pointer transition-all hover:bg-indigo-900/20 hover:shadow-[0_0_10px_rgba(99,102,241,0.3)]"
+                    className={`cursor-pointer transition-all ${
+                      theme === 'light'
+                        ? 'hover:bg-gray-50'
+                        : 'hover:bg-indigo-900/20 hover:shadow-[0_0_10px_rgba(99,102,241,0.3)]'
+                    }`}
                   >
-                    <Td>{new Date(r.created_at).toLocaleString()}</Td>
-                    <Td>
-                      <span className="px-3 py-1 bg-indigo-900/30 border border-indigo-500/50 rounded-lg font-medium text-indigo-300">
+                    <Td theme={theme}>{new Date(r.created_at).toLocaleString()}</Td>
+                    <Td theme={theme}>
+                      <span className={`px-3 py-1 rounded-lg font-medium ${
+                        theme === 'light'
+                          ? 'bg-gray-100 border border-gray-300 text-black'
+                          : 'bg-indigo-900/30 border border-indigo-500/50 text-indigo-300'
+                      }`}>
                         {r.model}
                       </span>
                     </Td>
-                    <Td className="font-semibold">{r.total_tokens?.toLocaleString() || 0}</Td>
-                    <Td className="font-mono">${(r.cost_usd || 0).toFixed(5)}</Td>
-                    <Td>
+                    <Td theme={theme} className="font-semibold">{r.total_tokens?.toLocaleString() || 0}</Td>
+                    <Td theme={theme} className="font-mono">${(r.cost_usd || 0).toFixed(5)}</Td>
+                    <Td theme={theme}>
                       <span className={`${
                         r.latency_ms < 1000 ? 'text-green-400' :
                         r.latency_ms < 3000 ? 'text-yellow-400' :
@@ -156,8 +182,8 @@ export default function RunsPage() {
                         {r.latency_ms}ms
                       </span>
                     </Td>
-                    <Td>
-                      <StatusBadge status={r.status || 'success'} />
+                    <Td theme={theme}>
+                      <StatusBadge status={r.status || 'success'} theme={theme} />
                     </Td>
                   </tr>
                 ))}
@@ -170,40 +196,56 @@ export default function RunsPage() {
   )
 }
 
-function Th({ children }: { children: React.ReactNode }) {
+function Th({ children, theme }: { children: React.ReactNode; theme: 'light' | 'dark' }) {
   return (
-    <th className="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider text-slate-300">
+    <th className={`px-6 py-4 text-left text-xs font-bold uppercase tracking-wider ${
+      theme === 'light' ? 'text-gray-700' : 'text-slate-300'
+    }`}>
       {children}
     </th>
   )
 }
 
-function Td({ children, className = '' }: { children: React.ReactNode; className?: string }) {
+function Td({ children, className = '', theme }: { children: React.ReactNode; className?: string; theme: 'light' | 'dark' }) {
   return (
-    <td className={`px-6 py-4 text-slate-300 whitespace-nowrap ${className}`}>
+    <td className={`px-6 py-4 whitespace-nowrap ${className} ${
+      theme === 'light' ? 'text-gray-900' : 'text-slate-300'
+    }`}>
       {children}
     </td>
   )
 }
 
-function SummaryStat({ label, value, icon }: { label: string; value: string | number; icon: string }) {
+function SummaryStat({ label, value, icon, theme }: { label: string; value: string | number; icon: string; theme: 'light' | 'dark' }) {
   return (
-    <div className="bg-slate-800/70 backdrop-blur-xl rounded-xl border border-slate-700 p-4">
+    <div className={`rounded-xl p-4 ${
+      theme === 'light'
+        ? 'bg-white border border-gray-200'
+        : 'bg-slate-800/70 backdrop-blur-xl border border-slate-700'
+    }`}>
       <div className="flex items-center justify-between mb-2">
         <span className="text-sm text-gray-400">{label}</span>
         <span className="text-2xl">{icon}</span>
       </div>
-      <div className="text-2xl font-bold text-white">{value}</div>
+      <div className={`text-2xl font-bold ${theme === 'light' ? 'text-black' : 'text-white'}`}>{value}</div>
     </div>
   )
 }
 
-function StatusBadge({ status }: { status: string }) {
-  const styles = {
+function StatusBadge({ status, theme }: { status: string; theme: 'light' | 'dark' }) {
+  const lightStyles = {
+    success: 'bg-green-50 border-green-300 text-green-700',
+    flagged: 'bg-red-50 border-red-300 text-red-700',
+    error: 'bg-orange-50 border-orange-300 text-orange-700'
+  }
+  
+  const darkStyles = {
     success: 'bg-green-900/30 border-green-500/50 text-green-300',
     flagged: 'bg-red-900/30 border-red-500/50 text-red-300',
     error: 'bg-orange-900/30 border-orange-500/50 text-orange-300'
   }
+  
+  const styles = theme === 'light' ? lightStyles : darkStyles
 
   return (
     <span className={`px-3 py-1 rounded-lg text-xs font-bold border ${styles[status as keyof typeof styles] || styles.success}`}>
