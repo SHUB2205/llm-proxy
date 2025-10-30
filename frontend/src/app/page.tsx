@@ -7,7 +7,7 @@ import { useRouter } from 'next/navigation'
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'
 
-export default function Dashboard() {
+export default function HomePage() {
   const { isAuthenticated, userEmail, proxyKey, logout } = useAuth()
   const { theme } = useTheme()
   const router = useRouter()
@@ -18,8 +18,9 @@ export default function Dashboard() {
   const [timeRange, setTimeRange] = useState('24h')
 
   useEffect(() => {
+    // Redirect to landing page if not authenticated
     if (!isAuthenticated || !proxyKey) {
-      router.push('/login')
+      router.push('/landing')
       return
     }
     loadData()
