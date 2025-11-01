@@ -5,8 +5,9 @@ __pycache__
 .Python
 venv/
 venv-windows/
+.venv/
 .env
-.venv
+.env.local
 *.log
 .git
 .gitignore
@@ -20,3 +21,8 @@ bulk_*.csv
 *.csv
 *.jsonl
 responses.jsonl
+Dockerfile
+.dockerignore
+nixpacks.toml
+Procfile
+runtime.txt
