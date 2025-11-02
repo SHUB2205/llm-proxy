@@ -30,8 +30,9 @@ export default function DetectionSettingsPage() {
       const response = await axios.get(`${API_URL}/v1/detection/config`, {
         headers: { 'Authorization': `Bearer ${proxyKey}` }
       })
-      setConfig(response.data)
-      setSelectedMode(response.data.mode)
+      const data = response.data as any
+      setConfig(data)
+      setSelectedMode(data.mode)
     } catch (err) {
       console.error('Error loading config:', err)
     } finally {
