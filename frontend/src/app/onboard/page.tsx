@@ -18,7 +18,7 @@ export default function OnboardPage() {
   const [formData, setFormData] = useState({
     email: '',
     companyName: '',
-    openaiApiKey: ''
+    openaiApiKey: ''  // Can be any LLM provider API key
   })
   
   const [result, setResult] = useState<any>(null)
@@ -111,7 +111,7 @@ export default function OnboardPage() {
                 <div className="flex items-start gap-3">
                   <span className="flex-shrink-0 w-6 h-6 bg-indigo-600 rounded-full flex items-center justify-center text-xs font-bold">1</span>
                   <div>
-                    <p className={`font-medium ${theme === 'light' ? 'text-black' : 'text-white'}`}>Replace your OpenAI endpoint</p>
+                    <p className={`font-medium ${theme === 'light' ? 'text-black' : 'text-white'}`}>Replace your LLM API endpoint</p>
                     <code className="text-xs text-gray-400">http://localhost:8000/v1/chat/completions</code>
                   </div>
                 </div>
@@ -143,7 +143,7 @@ response = httpx.post(
         "Content-Type": "application/json"
     },
     json={
-        "model": "gpt-4o-mini",
+        "model": "gpt-4o-mini",  # or claude-3-5-sonnet, gemini-2.0-flash-exp
         "messages": [
             {"role": "user", "content": "Hello!"}
         ]
@@ -229,7 +229,7 @@ print(result["observability"])  # View flags`}
 
           <div>
             <label className={`block text-sm font-medium mb-2 ${theme === 'light' ? 'text-gray-700' : 'text-gray-300'}`}>
-              OpenAI API Key
+              LLM API Key (OpenAI, Claude, Gemini, etc.)
             </label>
             <input
               type="password"
@@ -237,7 +237,7 @@ print(result["observability"])  # View flags`}
               value={formData.openaiApiKey}
               onChange={(e) => setFormData({ ...formData, openaiApiKey: e.target.value })}
               className={`w-full px-4 py-3 rounded-lg focus:outline-none focus:ring-2 ${theme === 'light' ? 'bg-white border border-gray-300 text-black placeholder-gray-400 focus:ring-black' : 'bg-slate-900/50 border border-slate-600 text-white placeholder-gray-500 focus:ring-indigo-500'}`}
-              placeholder="sk-..."
+              placeholder="sk-... (OpenAI, Claude, Gemini, DeepSeek, etc.)"
             />
             <p className="text-xs text-gray-400 mt-2">
               🔒 Your API key is encrypted and stored securely

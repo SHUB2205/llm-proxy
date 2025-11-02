@@ -23,8 +23,8 @@ from dataclasses import dataclass, asdict
 # === CONFIG ===
 PROXY_URL = "http://localhost:8000/v1/chat/completions"
 RELIABILITY_URL = "http://localhost:8000/v1/reliability"
-PROXY_KEY = "llm_obs_SCg21yZUM-rbFE2-mUgBTFoB9ncVDM-xtcXP6fWwd5s"  # Your new proxy key
-MODEL = "gpt-4o-mini"
+PROXY_KEY = "llm_obs_tAZvwJpoNYTjS74cuUTPcZwOifGfDngHTMAGqdKC6yk"  # Your new proxy key
+MODEL = "Claude Sonnet 3.7"
 TEMPERATURE = 0.7  # Lower = more deterministic, better for reliability
 MAX_TOKENS = 200
 CONCURRENCY = 5  # Lower concurrency for better reliability

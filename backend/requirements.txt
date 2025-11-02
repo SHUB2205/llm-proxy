@@ -4,15 +4,12 @@ uvicorn[standard]
 python-dotenv
 httpx
 openai
+anthropic
+google-generativeai
 supabase
 asyncpg
 pydantic
 
-# Advanced Hallucination Detection Dependencies
-sentence-transformers
-transformers
-torch
-hdbscan
+# Lightweight ML Dependencies (scikit-learn is much smaller than PyTorch)
 scikit-learn
-nltk
 numpy

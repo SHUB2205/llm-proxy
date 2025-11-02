@@ -38,7 +38,7 @@ export default function RunsPage() {
       const response = await axios.get(`${API_URL}/v1/runs?${params}`, {
         headers: { 'Authorization': `Bearer ${proxyKey}` }
       })
-      setRuns(response.data.runs || [])
+      setRuns((response.data as any).runs || [])
     } catch (err) {
       console.error('Error loading runs:', err)
     } finally {
@@ -75,10 +75,24 @@ export default function RunsPage() {
             }`}
           >
             <option value="">All Models</option>
-            <option value="gpt-4o">GPT-4o</option>
-            <option value="gpt-4o-mini">GPT-4o-mini</option>
-            <option value="gpt-4-turbo">GPT-4 Turbo</option>
-            <option value="gpt-3.5-turbo">GPT-3.5 Turbo</option>
+            <optgroup label="OpenAI">
+              <option value="gpt-4o">GPT-4o</option>
+              <option value="gpt-4o-mini">GPT-4o-mini</option>
+              <option value="gpt-4-turbo">GPT-4 Turbo</option>
+              <option value="gpt-3.5-turbo">GPT-3.5 Turbo</option>
+            </optgroup>
+            <optgroup label="Anthropic">
+              <option value="claude-3-5-sonnet">Claude 3.5 Sonnet</option>
+              <option value="claude-3-opus">Claude 3 Opus</option>
+              <option value="claude-3-sonnet">Claude 3 Sonnet</option>
+            </optgroup>
+            <optgroup label="Google">
+              <option value="gemini-2.0-flash">Gemini 2.0 Flash</option>
+              <option value="gemini-1.5-pro">Gemini 1.5 Pro</option>
+            </optgroup>
+            <optgroup label="DeepSeek">
+              <option value="deepseek-chat">DeepSeek Chat</option>
+            </optgroup>
           </select>
 
           <select

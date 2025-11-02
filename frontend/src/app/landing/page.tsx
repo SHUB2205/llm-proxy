@@ -165,6 +165,172 @@ export default function LandingPage() {
         </div>
       </section>
 
+      {/* How to Integrate Section */}
+      <section className={`py-20 px-6 ${theme === 'light' ? 'bg-gray-50' : 'bg-slate-900/30'}`}>
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center mb-16">
+            <h2 className={`text-4xl md:text-5xl font-bold mb-4 ${theme === 'light' ? 'text-black' : 'text-white'}`}>
+              Integration in <span className="bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent">3 Simple Steps</span>
+            </h2>
+            <p className={`text-xl ${theme === 'light' ? 'text-gray-600' : 'text-gray-400'}`}>Start monitoring your LLMs in under 5 minutes</p>
+          </div>
+
+          <div className="grid md:grid-cols-3 gap-8 mb-12">
+            {/* Step 1 */}
+            <div className={`rounded-2xl p-8 ${theme === 'light' ? 'bg-white border border-gray-200' : 'bg-slate-800/50 border border-indigo-500/30'}`}>
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-10 h-10 rounded-full bg-indigo-600 flex items-center justify-center text-white font-bold">1</div>
+                <h3 className={`text-xl font-bold ${theme === 'light' ? 'text-black' : 'text-white'}`}>Sign Up & Get API Key</h3>
+              </div>
+              <p className={`text-sm mb-4 ${theme === 'light' ? 'text-gray-600' : 'text-gray-400'}`}>
+                Register your account and receive your unique proxy API key instantly.
+              </p>
+              <div className={`rounded-lg p-4 font-mono text-xs ${theme === 'light' ? 'bg-gray-100 text-gray-800' : 'bg-slate-900 text-green-400'}`}>
+                <div className="text-gray-500 mb-2"># Your proxy key</div>
+                <div>sk-proxy-xxx...</div>
+              </div>
+            </div>
+
+            {/* Step 2 */}
+            <div className={`rounded-2xl p-8 ${theme === 'light' ? 'bg-white border border-gray-200' : 'bg-slate-800/50 border border-indigo-500/30'}`}>
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-10 h-10 rounded-full bg-indigo-600 flex items-center justify-center text-white font-bold">2</div>
+                <h3 className={`text-xl font-bold ${theme === 'light' ? 'text-black' : 'text-white'}`}>Update Your Code</h3>
+              </div>
+              <p className={`text-sm mb-4 ${theme === 'light' ? 'text-gray-600' : 'text-gray-400'}`}>
+                Change 2 lines: base URL and API key. Works with OpenAI, Claude, Gemini, DeepSeek!
+              </p>
+              <div className={`rounded-lg p-4 font-mono text-xs ${theme === 'light' ? 'bg-gray-100 text-gray-800' : 'bg-slate-900 text-green-400'}`}>
+                <div className="text-gray-500 mb-2"># Before</div>
+                <div className="line-through opacity-50">base_url="https://api.openai.com/v1"</div>
+                <div className="text-gray-500 mt-3 mb-2"># After</div>
+                <div>base_url="YOUR_PROXY_URL/v1"</div>
+                <div>api_key="sk-proxy-xxx"</div>
+              </div>
+            </div>
+
+            {/* Step 3 */}
+            <div className={`rounded-2xl p-8 ${theme === 'light' ? 'bg-white border border-gray-200' : 'bg-slate-800/50 border border-indigo-500/30'}`}>
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-10 h-10 rounded-full bg-indigo-600 flex items-center justify-center text-white font-bold">3</div>
+                <h3 className={`text-xl font-bold ${theme === 'light' ? 'text-black' : 'text-white'}`}>Monitor & Optimize</h3>
+              </div>
+              <p className={`text-sm mb-4 ${theme === 'light' ? 'text-gray-600' : 'text-gray-400'}`}>
+                View real-time analytics, detect issues, and optimize costs automatically.
+              </p>
+              <div className={`rounded-lg p-4 ${theme === 'light' ? 'bg-gray-100' : 'bg-slate-900'}`}>
+                <div className="flex items-center gap-2 mb-2">
+                  <div className="w-3 h-3 rounded-full bg-green-500"></div>
+                  <span className={`text-xs ${theme === 'light' ? 'text-gray-700' : 'text-gray-300'}`}>Monitoring active</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <div className="w-3 h-3 rounded-full bg-yellow-500"></div>
+                  <span className={`text-xs ${theme === 'light' ? 'text-gray-700' : 'text-gray-300'}`}>2 hallucinations detected</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Code Examples */}
+          <div className={`rounded-2xl p-8 ${theme === 'light' ? 'bg-white border border-gray-200' : 'bg-slate-800/70 border border-slate-700'}`}>
+            <h3 className={`text-2xl font-bold mb-6 ${theme === 'light' ? 'text-black' : 'text-white'}`}>📝 Code Examples</h3>
+            
+            <div className="grid md:grid-cols-2 gap-6">
+              {/* Python Example */}
+              <div>
+                <div className="flex items-center gap-2 mb-3">
+                  <span className={`text-sm font-semibold ${theme === 'light' ? 'text-gray-700' : 'text-gray-300'}`}>Python (OpenAI SDK)</span>
+                  <span className="px-2 py-1 bg-blue-500/20 text-blue-400 text-xs rounded">Most Popular</span>
+                </div>
+                <pre className={`rounded-lg p-4 overflow-x-auto text-xs ${theme === 'light' ? 'bg-gray-100 text-gray-800' : 'bg-slate-900 text-green-400'}`}>
+{`from openai import OpenAI
+
+client = OpenAI(
+    base_url="YOUR_PROXY_URL/v1",
+    api_key="sk-proxy-xxx"
+)
+
+response = client.chat.completions.create(
+    model="gpt-4o-mini",  # or claude-3-5-sonnet
+    messages=[
+        {"role": "user", "content": "Hello!"}
+    ]
+)
+
+print(response.choices[0].message.content)
+# ✅ Automatically monitored!`}</pre>
+              </div>
+
+              {/* JavaScript Example */}
+              <div>
+                <div className="flex items-center gap-2 mb-3">
+                  <span className={`text-sm font-semibold ${theme === 'light' ? 'text-gray-700' : 'text-gray-300'}`}>JavaScript / TypeScript</span>
+                </div>
+                <pre className={`rounded-lg p-4 overflow-x-auto text-xs ${theme === 'light' ? 'bg-gray-100 text-gray-800' : 'bg-slate-900 text-green-400'}`}>
+{`import OpenAI from 'openai';
+
+const client = new OpenAI({
+  baseURL: 'YOUR_PROXY_URL/v1',
+  apiKey: 'sk-proxy-xxx'
+});
+
+const response = await client.chat.completions.create({
+  model: 'gpt-4o-mini',
+  messages: [
+    { role: 'user', content: 'Hello!' }
+  ]
+});
+
+console.log(response.choices[0].message.content);
+// ✅ Automatically monitored!`}</pre>
+              </div>
+            </div>
+
+            {/* Supported Providers */}
+            <div className="mt-8 pt-8 border-t border-slate-700">
+              <h4 className={`text-lg font-semibold mb-4 ${theme === 'light' ? 'text-black' : 'text-white'}`}>🤖 Supported AI Providers</h4>
+              <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+                {[
+                  { name: 'OpenAI', models: 'GPT-4, GPT-3.5, O1' },
+                  { name: 'Anthropic', models: 'Claude 3.5 Sonnet' },
+                  { name: 'Google', models: 'Gemini 2.0, 1.5' },
+                  { name: 'DeepSeek', models: 'DeepSeek Chat' },
+                  { name: 'OpenRouter', models: 'Llama, Mistral' }
+                ].map((provider, i) => (
+                  <div key={i} className={`p-4 rounded-lg ${theme === 'light' ? 'bg-gray-50' : 'bg-slate-900/50'}`}>
+                    <div className={`font-semibold mb-1 ${theme === 'light' ? 'text-black' : 'text-white'}`}>{provider.name}</div>
+                    <div className={`text-xs ${theme === 'light' ? 'text-gray-600' : 'text-gray-400'}`}>{provider.models}</div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* What You Get */}
+            <div className="mt-8 pt-8 border-t border-slate-700">
+              <h4 className={`text-lg font-semibold mb-4 ${theme === 'light' ? 'text-black' : 'text-white'}`}>✨ What You Get Automatically</h4>
+              <div className="grid md:grid-cols-3 gap-4">
+                {[
+                  { icon: '🔍', title: 'Hallucination Detection', desc: '5-layer detection system' },
+                  { icon: '💰', title: 'Cost Tracking', desc: 'Real-time spend monitoring' },
+                  { icon: '📊', title: 'Drift Detection', desc: 'Behavior change alerts' },
+                  { icon: '🎯', title: 'Prompt Optimization', desc: 'AI-powered suggestions' },
+                  { icon: '🚨', title: 'Safety Flags', desc: 'PII & content moderation' },
+                  { icon: '📈', title: 'Analytics Dashboard', desc: 'Beautiful real-time UI' }
+                ].map((feature, i) => (
+                  <div key={i} className={`flex items-start gap-3 p-3 rounded-lg ${theme === 'light' ? 'bg-gray-50' : 'bg-slate-900/30'}`}>
+                    <span className="text-2xl">{feature.icon}</span>
+                    <div>
+                      <div className={`font-semibold text-sm ${theme === 'light' ? 'text-black' : 'text-white'}`}>{feature.title}</div>
+                      <div className={`text-xs ${theme === 'light' ? 'text-gray-600' : 'text-gray-400'}`}>{feature.desc}</div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Problem Section */}
       <section className="py-20 px-6 bg-gradient-to-b from-transparent to-slate-900/50">
         <div className="max-w-7xl mx-auto">

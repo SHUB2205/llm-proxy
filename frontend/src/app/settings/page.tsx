@@ -73,7 +73,7 @@ export default function SettingsPage() {
           <h2 className={`text-2xl font-bold mb-4 ${theme === 'light' ? 'text-black' : 'text-white'}`}>Integration Example</h2>
           <div className={`rounded-lg p-4 ${theme === 'light' ? 'bg-gray-50' : 'bg-slate-900/50'}`}>
             <pre className={`text-sm overflow-x-auto ${theme === 'light' ? 'text-gray-900' : 'text-gray-300'}`}>
-{`# Python Example
+{`# Python Example (works with any LLM provider)
 from openai import OpenAI
 
 client = OpenAI(
@@ -82,13 +82,11 @@ client = OpenAI(
 )
 
 response = client.chat.completions.create(
-    model="gpt-4o-mini",
+    model="gpt-4o-mini",  # or claude-3-5-sonnet, gemini-2.0-flash-exp
     messages=[
         {"role": "user", "content": "Hello!"}
     ]
-)
-
-print(response.choices[0].message.content)`}
+)`}
             </pre>
           </div>
         </div>

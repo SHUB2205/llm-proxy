@@ -48,7 +48,7 @@ export default function TestPage() {
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-          model: 'gpt-4o-mini',
+          model: 'gpt-4o-mini',  // or claude-3-5-sonnet, gemini-2.0-flash-exp
           messages: [{ role: 'user', content: prompt }],
           temperature: 0.7
         })

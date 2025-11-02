@@ -25,7 +25,16 @@ from database import (
     get_flag_stats
 )
 from hallucination_detector import HallucinationDetector, calculate_overall_risk_score
-from advanced_detection import AdvancedHallucinationDetector, DetectionConfig
+
+# Try to import advanced detection (optional - requires heavy ML dependencies)
+try:
+    from advanced_detection import AdvancedHallucinationDetector, DetectionConfig
+    ADVANCED_DETECTION_ENABLED = True
+except ImportError:
+    ADVANCED_DETECTION_ENABLED = False
+    AdvancedHallucinationDetector = None
+    DetectionConfig = None
+    print("⚠️  Advanced detection not available (requires PyTorch). Using basic detection.")
 
 # Import enterprise features
 try:
@@ -91,7 +100,7 @@ app.add_middleware(
 
 # Initialize detectors
 detector = HallucinationDetector()  # Keep for backward compatibility
-advanced_detector = AdvancedHallucinationDetector(DetectionConfig.balanced())  # New advanced detector
+advanced_detector = AdvancedHallucinationDetector(DetectionConfig.balanced()) if ADVANCED_DETECTION_ENABLED else None  # New advanced detector (optional)
 
 # Include enterprise router if available
 if ENTERPRISE_ENABLED:
