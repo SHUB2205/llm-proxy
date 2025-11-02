@@ -32,24 +32,24 @@ export default function FinOpsPage() {
       const [overviewRes, agentsRes, modelsRes, statsRes] = await Promise.all([
         axios.get(`${API_URL}/v1/finops/dashboard/overview?organization_id=default&period=30d`, {
           headers: { 'Authorization': `Bearer ${proxyKey}` }
-        }).catch(() => null),
+        }).catch(() => null as any),
         axios.get(`${API_URL}/v1/finops/analytics/agents?organization_id=default`, {
           headers: { 'Authorization': `Bearer ${proxyKey}` }
-        }).catch(() => null),
+        }).catch(() => null as any),
         axios.get(`${API_URL}/v1/finops/analytics/models?organization_id=default`, {
           headers: { 'Authorization': `Bearer ${proxyKey}` }
-        }).catch(() => null),
+        }).catch(() => null as any),
         axios.get(`${API_URL}/v1/stats`, {
           headers: { 'Authorization': `Bearer ${proxyKey}` }
-        }).catch(() => null),
+        }).catch(() => null as any),
       ])
       
       // If FinOps data exists, use it
-      if (overviewRes?.data) {
+      if (overviewRes && overviewRes.data) {
         setOverview(overviewRes.data)
-      } else if (statsRes?.data) {
+      } else if (statsRes && statsRes.data) {
         // Fallback: convert basic stats to FinOps format
-        const stats = statsRes.data
+        const stats = statsRes.data as any
         setOverview({
           summary: {
             total_cost_usd: stats.last_24h?.total_cost || 0,
@@ -80,7 +80,9 @@ export default function FinOpsPage() {
         }
       }
       
-      setAgents(agentsRes?.data)
+      if (agentsRes && agentsRes.data) {
+        setAgents(agentsRes.data)
+      }
     } catch (error) {
       console.error('Error fetching FinOps data:', error)
     } finally {
