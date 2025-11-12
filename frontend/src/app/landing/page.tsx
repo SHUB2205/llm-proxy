@@ -89,10 +89,15 @@ export default function LandingPage() {
               Sign In
             </button>
             <button
-              onClick={() => router.push('/onboard')}
+              onClick={() => {
+                setShowWaitlistForm(true)
+                setTimeout(() => {
+                  document.getElementById('waitlist')?.scrollIntoView({ behavior: 'smooth' })
+                }, 100)
+              }}
               className={`px-6 py-2 rounded-xl font-medium transition-all ${theme === 'light' ? 'bg-black hover:bg-gray-800 text-white' : 'bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white'}`}
             >
-              Get Started
+              Coming Soon
             </button>
           </div>
         </div>
@@ -520,7 +525,7 @@ console.log(response.choices[0].message.content);
                   '7-day data retention',
                   'Community support',
                 ],
-                cta: 'Start Free',
+                cta: 'Coming Soon',
                 highlighted: false,
               },
               {
@@ -535,7 +540,7 @@ console.log(response.choices[0].message.content);
                   'Email support',
                   'API access',
                 ],
-                cta: 'Start Trial',
+                cta: 'Coming Soon',
                 highlighted: true,
               },
               {
@@ -550,7 +555,7 @@ console.log(response.choices[0].message.content);
                   'SSO/SAML',
                   'SLA guarantee',
                 ],
-                cta: 'Contact Sales',
+                cta: 'Coming Soon',
                 highlighted: false,
               },
             ].map((plan, i) => (
@@ -585,7 +590,12 @@ console.log(response.choices[0].message.content);
                   ))}
                 </ul>
                 <button
-                  onClick={() => router.push('/onboard')}
+                  onClick={() => {
+                    setShowWaitlistForm(true)
+                    setTimeout(() => {
+                      document.getElementById('waitlist')?.scrollIntoView({ behavior: 'smooth' })
+                    }, 100)
+                  }}
                   className={`w-full py-3 rounded-xl font-semibold transition-all ${
                     plan.highlighted
                       ? 'bg-white text-indigo-600 hover:bg-gray-100'
