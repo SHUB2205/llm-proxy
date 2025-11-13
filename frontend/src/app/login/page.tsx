@@ -3,14 +3,18 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { useAuth } from '@/contexts/AuthContext'
 import { useTheme } from '@/contexts/ThemeContext'
+import axios from 'axios'
+
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'
 
 export default function LoginPage() {
   const router = useRouter()
   const { login, isAuthenticated } = useAuth()
   const { theme, toggleTheme } = useTheme()
-  const [proxyKey, setProxyKey] = useState('')
   const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
   const [error, setError] = useState('')
+  const [loading, setLoading] = useState(false)
 
   useEffect(() => {
     if (isAuthenticated) {
@@ -18,17 +22,36 @@ export default function LoginPage() {
     }
   }, [isAuthenticated, router])
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault()
+    setError('')
+    setLoading(true)
 
-    if (!proxyKey || !email) {
-      setError('Please enter both email and proxy key')
+    if (!email || !password) {
+      setError('Please enter both email and password')
+      setLoading(false)
       return
     }
 
-    // Correct argument order for login(proxyKey, email)
-    login(proxyKey, email)
-    router.push('/')
+    try {
+      // Call new auth API
+      const response = await axios.post(`${API_URL}/v1/auth/login`, {
+        email,
+        password
+      })
+
+      if (response.data.success && response.data.proxy_key) {
+        // Login with proxy key
+        login(response.data.proxy_key, email)
+        router.push('/')
+      } else {
+        setError('Login failed. Please try again.')
+      }
+    } catch (err: any) {
+      setError(err.response?.data?.detail || 'Invalid email or password')
+    } finally {
+      setLoading(false)
+    }
   }
 
   return (
@@ -87,23 +110,20 @@ export default function LoginPage() {
 
           <div>
             <label className={`block text-sm font-medium mb-2 ${theme === 'light' ? 'text-gray-700' : 'text-gray-300'}`}>
-              Proxy API Key
+              Password
             </label>
             <input
               type="password"
               required
-              value={proxyKey}
-              onChange={(e) => setProxyKey(e.target.value)}
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
               className={`w-full px-4 py-3 rounded-lg focus:outline-none focus:ring-2 ${
                 theme === 'light'
                   ? 'bg-white border border-gray-300 text-black placeholder-gray-400 focus:ring-black'
                   : 'bg-slate-900/50 border border-slate-600 text-white placeholder-gray-500 focus:ring-indigo-500'
               }`}
-              placeholder="llm_obs_..."
+              placeholder="Enter your password"
             />
-            <p className="text-xs text-gray-400 mt-2">
-              Enter the proxy key you received during registration
-            </p>
           </div>
 
           {error && (
@@ -118,13 +138,14 @@ export default function LoginPage() {
 
           <button
             type="submit"
-            className={`w-full px-6 py-3 rounded-xl font-medium transition-colors ${
+            disabled={loading}
+            className={`w-full px-6 py-3 rounded-xl font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${
               theme === 'light'
                 ? 'bg-black hover:bg-gray-800 text-white'
                 : 'bg-indigo-600 hover:bg-indigo-700 text-white'
             }`}
           >
-            Sign In
+            {loading ? 'Signing in...' : 'Sign In'}
           </button>
         </form>
 

@@ -17,6 +17,7 @@ export default function OnboardPage() {
   
   const [formData, setFormData] = useState({
     email: '',
+    password: '',
     companyName: '',
     openaiApiKey: ''  // Can be any LLM provider API key
   })
@@ -36,8 +37,10 @@ export default function OnboardPage() {
     setError('')
 
     try {
-      const response = await axios.post(`${API_URL}/v1/users/register`, {
+      // Use new auth API endpoint
+      const response = await axios.post(`${API_URL}/v1/auth/signup`, {
         email: formData.email,
+        password: formData.password,
         company_name: formData.companyName,
         openai_api_key: formData.openaiApiKey
       })
@@ -210,6 +213,21 @@ print(result["observability"])  # View flags`}
               onChange={(e) => setFormData({ ...formData, email: e.target.value })}
               className={`w-full px-4 py-3 rounded-lg focus:outline-none focus:ring-2 ${theme === 'light' ? 'bg-white border border-gray-300 text-black placeholder-gray-400 focus:ring-black' : 'bg-slate-900/50 border border-slate-600 text-white placeholder-gray-500 focus:ring-indigo-500'}`}
               placeholder="admin@yourcompany.com"
+            />
+          </div>
+
+          <div>
+            <label className={`block text-sm font-medium mb-2 ${theme === 'light' ? 'text-gray-700' : 'text-gray-300'}`}>
+              Password
+            </label>
+            <input
+              type="password"
+              required
+              value={formData.password}
+              onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+              className={`w-full px-4 py-3 rounded-lg focus:outline-none focus:ring-2 ${theme === 'light' ? 'bg-white border border-gray-300 text-black placeholder-gray-400 focus:ring-black' : 'bg-slate-900/50 border border-slate-600 text-white placeholder-gray-500 focus:ring-indigo-500'}`}
+              placeholder="Create a secure password"
+              minLength={6}
             />
           </div>
 

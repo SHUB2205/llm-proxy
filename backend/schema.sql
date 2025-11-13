@@ -7,7 +7,7 @@ CREATE TABLE IF NOT EXISTS users (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     email VARCHAR(255) UNIQUE NOT NULL,
     company_name VARCHAR(255),
-    encrypted_api_key TEXT NOT NULL, -- Encrypted OpenAI API key
+    encrypted_api_key TEXT, -- Optional: Encrypted OpenAI API key (can be added later)
     created_at TIMESTAMP DEFAULT NOW(),
     updated_at TIMESTAMP DEFAULT NOW(),
     is_active BOOLEAN DEFAULT TRUE

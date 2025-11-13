@@ -25,6 +25,8 @@ from database import (
     get_flag_stats
 )
 from hallucination_detector import HallucinationDetector, calculate_overall_risk_score
+from auth import get_current_user, verify_api_key
+from auth_api import router as auth_router
 
 # Try to import advanced detection (optional - requires heavy ML dependencies)
 try:
@@ -102,6 +104,10 @@ app.add_middleware(
 detector = HallucinationDetector()  # Keep for backward compatibility
 advanced_detector = AdvancedHallucinationDetector(DetectionConfig.balanced()) if ADVANCED_DETECTION_ENABLED else None  # New advanced detector (optional)
 
+# Include authentication router (REQUIRED)
+app.include_router(auth_router)
+print("✅ Supabase Authentication enabled")
+
 # Include enterprise router if available
 if ENTERPRISE_ENABLED:
     app.include_router(enterprise_router)
@@ -129,26 +135,10 @@ if WAITLIST_ENABLED:
 
 
 # ============================================
-# Authentication Dependency
+# Authentication Dependency (DEPRECATED - use auth.py)
 # ============================================
-
-async def verify_proxy_key(authorization: Optional[str] = Header(None)) -> dict:
-    """Verify proxy API key and return user context"""
-    if not authorization:
-        raise HTTPException(status_code=401, detail="Missing Authorization header")
-    
-    # Extract key from "Bearer <key>" format
-    if authorization.startswith("Bearer "):
-        proxy_key = authorization[7:]
-    else:
-        proxy_key = authorization
-    
-    user_data = await get_user_by_proxy_key(proxy_key)
-    
-    if not user_data:
-        raise HTTPException(status_code=401, detail="Invalid or inactive API key")
-    
-    return user_data
+# Note: verify_proxy_key is deprecated. Use get_current_user from auth.py
+# Keeping for backward compatibility during migration
 
 
 # ============================================
@@ -269,13 +259,13 @@ async def register_user(request: Request):
 @app.post("/v1/keys/create")
 async def create_new_proxy_key(
     request: Request,
-    user_context: dict = Depends(verify_proxy_key)
+    user: dict = Depends(get_current_user)
 ):
     """Create a new proxy API key for the authenticated user"""
     body = await request.json()
     key_name = body.get("key_name", "Unnamed Key")
     
-    user_id = user_context["users"]["id"]
+    user_id = user["user_id"]
     
     try:
         proxy_key_data = await create_proxy_key(user_id, key_name)
@@ -296,7 +286,7 @@ async def create_new_proxy_key(
 @app.post("/v1/chat/completions")
 async def proxy_chat_completions(
     request: Request,
-    user_context: dict = Depends(verify_proxy_key)
+    user: dict = Depends(get_current_user)
 ):
     """
     Proxy endpoint for OpenAI chat completions with hallucination detection
@@ -308,13 +298,12 @@ async def proxy_chat_completions(
     run_id = str(uuid.uuid4())
     
     # Extract user info
-    user_id = user_context["users"]["id"]
-    proxy_key_id = user_context["id"]
+    user_id = user["user_id"]
     
     # Get user's OpenAI API key
-    openai_key = await get_user_openai_key(user_id)
+    openai_api_key = await get_user_openai_key(user_id)
     
-    if not openai_key:
+    if not openai_api_key:
         raise HTTPException(status_code=500, detail="OpenAI API key not found for user")
     
     try:
@@ -324,7 +313,7 @@ async def proxy_chat_completions(
                 "https://api.openai.com/v1/chat/completions",
                 json=body,
                 headers={
-                    "Authorization": f"Bearer {openai_key}",
+                    "Authorization": f"Bearer {openai_api_key}",
                     "Content-Type": "application/json",
                 },
                 timeout=60.0,
@@ -468,10 +457,10 @@ async def get_runs(
     offset: int = 0,
     model: Optional[str] = None,
     status: Optional[str] = None,
-    user_context: dict = Depends(verify_proxy_key)
+    user: dict = Depends(get_current_user)
 ):
     """Get list of runs for authenticated user"""
-    user_id = user_context["users"]["id"]
+    user_id = user["user_id"]
     
     query = supabase.table("runs").select("*").eq("user_id", user_id)
     
@@ -493,10 +482,10 @@ async def get_runs(
 @app.get("/v1/runs/{run_id}")
 async def get_run_detail(
     run_id: str,
-    user_context: dict = Depends(verify_proxy_key)
+    user: dict = Depends(get_current_user)
 ):
     """Get detailed view of a single run with flags"""
-    user_id = user_context["users"]["id"]
+    user_id = user["user_id"]
     
     # Get run with payload
     run = supabase.table("runs").select("*, payloads(*)").eq("id", run_id).eq("user_id", user_id).single().execute()
@@ -518,10 +507,10 @@ async def get_flags(
     is_resolved: Optional[bool] = None,
     severity: Optional[str] = None,
     limit: int = 50,
-    user_context: dict = Depends(verify_proxy_key)
+    user: dict = Depends(get_current_user)
 ):
     """Get flags for authenticated user"""
-    user_id = user_context["users"]["id"]
+    user_id = user["user_id"]
     
     flags = await get_flags_for_user(user_id, is_resolved, severity, limit)
     
@@ -534,10 +523,10 @@ async def get_flags(
 @app.post("/v1/flags/{flag_id}/resolve")
 async def resolve_flag_endpoint(
     flag_id: str,
-    user_context: dict = Depends(verify_proxy_key)
+    user: dict = Depends(get_current_user)
 ):
     """Mark a flag as resolved"""
-    user_id = user_context["users"]["id"]
+    user_id = user["user_id"]
     
     result = await resolve_flag(flag_id, user_id)
     
@@ -551,10 +540,10 @@ async def resolve_flag_endpoint(
 @app.get("/v1/stats")
 async def get_stats(
     time_range: str = "24h",
-    user_context: dict = Depends(verify_proxy_key)
+    user: dict = Depends(get_current_user)
 ):
     """Get aggregate statistics for authenticated user"""
-    user_id = user_context["users"]["id"]
+    user_id = user["user_id"]
     
     now = datetime.utcnow()
     
@@ -616,10 +605,10 @@ async def get_stats(
 
 @app.get("/v1/dashboard")
 async def get_dashboard(
-    user_context: dict = Depends(verify_proxy_key)
+    user: dict = Depends(get_current_user)
 ):
     """Get comprehensive dashboard data"""
-    user_id = user_context["users"]["id"]
+    user_id = user["user_id"]
     
     # Get stats
     stats = await get_stats(user_context)
@@ -651,7 +640,7 @@ async def get_dashboard(
 
 @app.get("/v1/detection/config")
 async def get_detection_config(
-    user_context: dict = Depends(verify_proxy_key)
+    user: dict = Depends(get_current_user)
 ):
     """Get current advanced detection configuration"""
     return {
@@ -676,7 +665,7 @@ async def get_detection_config(
 @app.post("/v1/detection/config")
 async def update_detection_config(
     request: Request,
-    user_context: dict = Depends(verify_proxy_key)
+    user: dict = Depends(get_current_user)
 ):
     """Update advanced detection configuration"""
     global advanced_detector
