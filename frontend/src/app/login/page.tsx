@@ -40,9 +40,10 @@ export default function LoginPage() {
         password
       })
 
-      if (response.data.success && response.data.proxy_key) {
+      const data = response.data as any
+      if (data.success && data.proxy_key) {
         // Login with proxy key
-        login(response.data.proxy_key, email)
+        login(data.proxy_key, email)
         router.push('/')
       } else {
         setError('Login failed. Please try again.')
