@@ -507,8 +507,8 @@ console.log(response.choices[0].message.content);
             {[
               {
                 name: 'Starter',
-                price: 'Custom',
-                period: 'pricing',
+                price: '$99',
+                period: 'per month',
                 features: [
                   'Up to 100K requests/month',
                   'All features included',
