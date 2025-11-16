@@ -48,19 +48,34 @@ class DriftMonitor:
         # The actual drift check happens periodically
         pass
     
-    async def check_drift(self, model: str = "gpt-4o-mini") -> Dict:
+    async def check_drift(self, model: str = None, user_id: str = None) -> Dict:
         """
         Check for drift in the last N requests
         Returns drift detection results
         """
+        # If no model specified or no data found, try to get any model for this user
+        if not model and user_id:
+            # Get the most used model for this user
+            try:
+                result = supabase.table("runs").select("model").eq("user_id", user_id).limit(1).execute()
+                if result.data and len(result.data) > 0:
+                    model = result.data[0].get("model", "gpt-4o-mini")
+                else:
+                    model = "gpt-4o-mini"
+            except:
+                model = "gpt-4o-mini"
+        elif not model:
+            model = "gpt-4o-mini"
+        
         # Get recent requests
-        recent_requests = await self._get_recent_requests(model, self.window_size)
+        recent_requests = await self._get_recent_requests(model, self.window_size, user_id)
         
         if len(recent_requests) < 50:
             return {
                 "has_drift": False,
-                "reason": "Insufficient data for drift detection",
-                "sample_size": len(recent_requests)
+                "reason": f"Insufficient data: Only {len(recent_requests)} runs found. Need at least 50 runs for drift detection.",
+                "sample_size": len(recent_requests),
+                "message": f"Insufficient data: Only {len(recent_requests)} runs found. Need at least 50 runs for drift detection."
             }
         
         # Get or create baseline
@@ -114,13 +129,18 @@ class DriftMonitor:
             "sample_size": len(recent_requests)
         }
     
-    async def _get_recent_requests(self, model: str, limit: int) -> List[Dict]:
+    async def _get_recent_requests(self, model: str, limit: int, user_id: str = None) -> List[Dict]:
         """Get recent requests from database"""
         try:
-            result = supabase.table("runs")\
+            query = supabase.table("runs")\
                 .select("*")\
-                .eq("model", model)\
-                .order("created_at", desc=True)\
+                .eq("model", model)
+            
+            # Filter by user_id if provided
+            if user_id:
+                query = query.eq("user_id", user_id)
+            
+            result = query.order("created_at", desc=True)\
                 .limit(limit)\
                 .execute()
             
@@ -257,10 +277,23 @@ class DriftMonitor:
     async def get_drift_history(
         self,
         model: Optional[str] = None,
-        limit: int = 50
+        limit: int = 50,
+        user_id: str = None
     ) -> List[Dict]:
         """Get drift detection history"""
         try:
+            # If user_id provided, only show drifts if user has enough data
+            if user_id:
+                # Check if user has enough runs to have meaningful drift data
+                runs_query = supabase.table("runs").select("id").eq("user_id", user_id)
+                if model:
+                    runs_query = runs_query.eq("model", model)
+                runs_result = runs_query.limit(50).execute()
+                
+                # If user has less than 50 runs, they won't have drift detections yet
+                if not runs_result.data or len(runs_result.data) < 50:
+                    return []
+            
             query = supabase.table("drift_detections").select("*")
             
             if model:
@@ -272,9 +305,29 @@ class DriftMonitor:
             print(f"Error getting drift history: {e}")
             return []
     
-    async def get_drift_stats(self, model: Optional[str] = None) -> Dict:
+    async def get_drift_stats(self, model: Optional[str] = None, user_id: str = None) -> Dict:
         """Get drift statistics"""
         try:
+            # If user_id provided, only show stats if user has enough data
+            if user_id:
+                # Check if user has enough runs to have meaningful drift data
+                runs_query = supabase.table("runs").select("id").eq("user_id", user_id)
+                if model:
+                    runs_query = runs_query.eq("model", model)
+                runs_result = runs_query.limit(50).execute()
+                
+                # If user has less than 50 runs, return empty stats
+                if not runs_result.data or len(runs_result.data) < 50:
+                    return {
+                        "total_drifts": 0,
+                        "critical_drifts": 0,
+                        "high_drifts": 0,
+                        "medium_drifts": 0,
+                        "recent_drifts_24h": 0,
+                        "drift_by_metric": {},
+                        "message": f"Insufficient data: Only {len(runs_result.data) if runs_result.data else 0} runs found. Need at least 50 runs for drift detection."
+                    }
+            
             # Get all drift detections
             query = supabase.table("drift_detections").select("*")
             if model:

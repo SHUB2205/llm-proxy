@@ -307,11 +307,17 @@ class AIFinOpsTracker:
     ) -> Dict[str, Dict]:
         """Which models drive the most spend?"""
         
-        result = supabase.table("agent_calls").select(
-            "model, input_tokens, output_tokens"
-        ).eq("organization_id", organization_id).gte(
-            "created_at", start_date.isoformat()
-        ).lte("created_at", end_date.isoformat()).execute()
+        # If organization_id is "default", get all data
+        if organization_id == "default":
+            result = supabase.table("agent_calls").select(
+                "model, input_tokens, output_tokens"
+            ).gte("created_at", start_date.isoformat()).lte("created_at", end_date.isoformat()).execute()
+        else:
+            result = supabase.table("agent_calls").select(
+                "model, input_tokens, output_tokens"
+            ).eq("organization_id", organization_id).gte(
+                "created_at", start_date.isoformat()
+            ).lte("created_at", end_date.isoformat()).execute()
         
         breakdown = defaultdict(lambda: {
             "calls": 0,
@@ -539,25 +545,29 @@ class AIFinOpsTracker:
         # TODO: Implement similarity detection for repeated prompts
         
         # 4. Failed workflows (wasted cost)
-        workflows = supabase.table("workflows").select(
-            "*"
-        ).eq("organization_id", organization_id).eq(
-            "success", False
-        ).gte("start_time", start_date.isoformat()).lte(
-            "start_time", end_date.isoformat()
-        ).execute()
-        
-        if workflows.data:
-            failed_cost = sum(w["total_cost_usd"] for w in workflows.data)
-            if failed_cost > 1.0:
-                opportunities.append({
-                    "type": "failed_workflows",
-                    "priority": "high",
-                    "count": len(workflows.data),
-                    "wasted_cost": failed_cost,
-                    "recommendation": f"{len(workflows.data)} workflows failed, wasting ${failed_cost:.2f}. Investigate error handling and retry logic",
-                    "potential_savings": failed_cost
-                })
+        try:
+            workflows = supabase.table("workflows").select(
+                "*"
+            ).eq("organization_id", organization_id).eq(
+                "success", False
+            ).gte("start_time", start_date.isoformat()).lte(
+                "start_time", end_date.isoformat()
+            ).execute()
+            
+            if workflows.data:
+                failed_cost = sum(w["total_cost_usd"] for w in workflows.data)
+                if failed_cost > 1.0:
+                    opportunities.append({
+                        "type": "failed_workflows",
+                        "priority": "high",
+                        "count": len(workflows.data),
+                        "wasted_cost": failed_cost,
+                        "recommendation": f"{len(workflows.data)} workflows failed, wasting ${failed_cost:.2f}. Investigate error handling and retry logic",
+                        "potential_savings": failed_cost
+                    })
+        except Exception as e:
+            # Workflows table doesn't exist - skip this optimization check
+            pass
         
         # Sort by potential savings
         opportunities.sort(key=lambda x: x.get("potential_savings", 0), reverse=True)
