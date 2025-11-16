@@ -35,14 +35,15 @@ export default function LoginPage() {
 
     try {
       // Call new auth API
-      const response = await axios.post<{ success: boolean; proxy_key?: string }>(`${API_URL}/v1/auth/login`, {
+      const response = await axios.post<{ success: boolean; proxy_key?: string; user?: { email: string; company_name?: string } }>(`${API_URL}/v1/auth/login`, {
         email,
         password
       })
 
       if (response.data.success && response.data.proxy_key) {
         // Login with proxy key
-        login(response.data.proxy_key, email)
+        const companyName = response.data.user?.company_name
+        login(response.data.proxy_key, email, companyName)
         router.push('/')
       } else {
         setError('Login failed. Please try again.')

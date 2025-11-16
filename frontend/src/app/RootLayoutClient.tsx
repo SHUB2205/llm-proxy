@@ -34,7 +34,7 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
 
 function Sidebar() {
   const pathname = usePathname()
-  const { isAuthenticated, userEmail, logout } = require('@/contexts/AuthContext').useAuth()
+  const { isAuthenticated, userEmail, companyName, logout } = require('@/contexts/AuthContext').useAuth()
   const { theme, toggleTheme } = useTheme()
   
   const links = [
@@ -70,10 +70,10 @@ function Sidebar() {
         <p className={`text-sm mt-1 text-center ${theme === 'light' ? 'text-gray-600' : 'text-slate-400'}`}>
           Analytics & Insights
         </p>
-        {isAuthenticated && userEmail && (
+        {isAuthenticated && (
           <div className={`mt-3 pt-3 border-t ${theme === 'light' ? 'border-gray-200' : 'border-slate-600'}`}>
             <p className={`text-xs truncate text-center ${theme === 'light' ? 'text-gray-600' : 'text-gray-400'}`}>
-              {userEmail}
+              {companyName || userEmail}
             </p>
           </div>
         )}

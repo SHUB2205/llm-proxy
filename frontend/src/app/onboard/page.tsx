@@ -46,7 +46,8 @@ export default function OnboardPage() {
       })
 
       // Save credentials
-      login((response.data as any).proxy_key, formData.email)
+      const companyName = (response.data as any).user?.company_name || formData.companyName
+      login((response.data as any).proxy_key, formData.email, companyName)
       
       setResult(response.data as any)
       setStep(2)
