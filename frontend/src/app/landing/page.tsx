@@ -97,7 +97,7 @@ export default function LandingPage() {
               }}
               className={`px-6 py-2 rounded-xl font-medium transition-all ${theme === 'light' ? 'bg-black hover:bg-gray-800 text-white' : 'bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white'}`}
             >
-              Coming Soon
+              Join Waitlist
             </button>
           </div>
         </div>
@@ -148,7 +148,7 @@ export default function LandingPage() {
               >
                 Join Waitlist
               </button>
-              <p className="text-sm text-gray-500">Limited beta access • Join 100+ teams on the waitlist</p>
+              <p className="text-sm text-gray-500">Limited spots • We'll onboard you personally • Enterprise-ready</p>
             </div>
 
             {/* Social Proof */}
@@ -508,54 +508,42 @@ console.log(response.choices[0].message.content);
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16">
             <h2 className="text-4xl md:text-5xl font-bold mb-4">
-              Simple, transparent pricing
+              Enterprise Pricing
             </h2>
-            <p className="text-xl text-gray-400">Start free, scale as you grow</p>
+            <p className="text-xl text-gray-400">Custom plans tailored to your needs</p>
           </div>
 
-          <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+          <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
             {[
               {
-                name: 'Free',
-                price: '$0',
-                period: 'forever',
-                features: [
-                  '1,000 requests/month',
-                  'Basic hallucination detection',
-                  '7-day data retention',
-                  'Community support',
-                ],
-                cta: 'Coming Soon',
-                highlighted: false,
-              },
-              {
-                name: 'Pro',
+                name: 'Starter',
                 price: '$99',
                 period: 'per month',
                 features: [
-                  '50,000 requests/month',
-                  'Advanced hallucination detection',
+                  'Up to 100K requests/month',
+                  'All features included',
                   'Drift detection',
                   '90-day data retention',
                   'Email support',
                   'API access',
                 ],
-                cta: 'Coming Soon',
+                cta: 'Join Waitlist',
                 highlighted: true,
               },
               {
                 name: 'Enterprise',
-                price: '$499',
-                period: 'per month',
+                price: 'Custom',
+                period: 'pricing',
                 features: [
                   'Unlimited requests',
-                  'All features',
+                  'All features included',
                   'Custom retention',
                   'Priority support',
                   'SSO/SAML',
                   'SLA guarantee',
+                  'Dedicated account manager',
                 ],
-                cta: 'Coming Soon',
+                cta: 'Contact Sales',
                 highlighted: false,
               },
             ].map((plan, i) => (

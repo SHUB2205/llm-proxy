@@ -35,7 +35,7 @@ export default function LoginPage() {
 
     try {
       // Call new auth API
-      const response = await axios.post(`${API_URL}/v1/auth/login`, {
+      const response = await axios.post<{ success: boolean; proxy_key?: string }>(`${API_URL}/v1/auth/login`, {
         email,
         password
       })

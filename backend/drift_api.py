@@ -26,7 +26,7 @@ async def verify_api_key(authorization: str = Header(None)):
 
 @router.get("/check")
 async def check_drift(
-    model: str = "gpt-4o-mini",
+    model: Optional[str] = None,
     user = Depends(verify_api_key)
 ):
     """
@@ -40,7 +40,8 @@ async def check_drift(
     - baseline_metrics: baseline metric values
     """
     try:
-        result = await drift_monitor.check_drift(model=model)
+        user_id = user["users"]["id"]
+        result = await drift_monitor.check_drift(model=model, user_id=user_id)
         return result
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error checking drift: {str(e)}")
@@ -60,7 +61,8 @@ async def get_drift_history(
     - limit: Number of results (default: 50)
     """
     try:
-        history = await drift_monitor.get_drift_history(model=model, limit=limit)
+        user_id = user["users"]["id"]
+        history = await drift_monitor.get_drift_history(model=model, limit=limit, user_id=user_id)
         return {"history": history, "count": len(history)}
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error getting drift history: {str(e)}")
@@ -83,7 +85,8 @@ async def get_drift_stats(
     - drift_by_metric: Breakdown by metric type
     """
     try:
-        stats = await drift_monitor.get_drift_stats(model=model)
+        user_id = user["users"]["id"]
+        stats = await drift_monitor.get_drift_stats(model=model, user_id=user_id)
         return stats
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error getting drift stats: {str(e)}")
