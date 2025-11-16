@@ -86,8 +86,8 @@ export default function LoginPage() {
           : 'bg-slate-800/70 backdrop-blur-xl border border-slate-700'
       }`}>
         <div className="text-center mb-8">
-          <h1 className={`text-3xl font-bold mb-2 ${theme === 'light' ? 'text-black' : 'text-white'}`}>Welcome Back</h1>
-          <p className={theme === 'light' ? 'text-gray-600' : 'text-gray-400'}>Sign in to your LLM Observability account</p>
+          <h1 className={`text-3xl font-bold mb-2 ${theme === 'light' ? 'text-black' : 'text-white'}`}>Sign In</h1>
+          <p className={theme === 'light' ? 'text-gray-600' : 'text-gray-400'}>Access your ModelSight dashboard</p>
         </div>
 
         <form onSubmit={handleLogin} className="space-y-6">

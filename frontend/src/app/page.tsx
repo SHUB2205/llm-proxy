@@ -106,45 +106,6 @@ export default function HomePage() {
 
   return (
     <div className={`pt-20 px-8 pb-16 min-h-screen ${theme === 'light' ? 'bg-white text-black' : 'bg-[#0f172a] text-gray-100'}`}>
-      {/* Welcome Banner with Logout */}
-      {showWelcome && (
-        <div className={`mb-6 rounded-2xl p-6 relative ${
-          theme === 'light'
-            ? 'bg-gray-50 border border-gray-200'
-            : 'bg-gradient-to-r from-indigo-500/20 to-purple-500/20 border border-indigo-500/50'
-        }`}>
-          <button
-            onClick={() => setShowWelcome(false)}
-            className={`absolute top-4 right-4 transition-colors ${
-              theme === 'light' ? 'text-gray-400 hover:text-black' : 'text-gray-400 hover:text-white'
-            }`}
-            aria-label="Close welcome banner"
-          >
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-            </svg>
-          </button>
-          <div className="flex items-center justify-between pr-8">
-            <div>
-              <h2 className={`text-xl font-bold mb-1 ${theme === 'light' ? 'text-black' : 'text-white'}`}>Welcome back!</h2>
-              <p className={`text-sm ${theme === 'light' ? 'text-gray-600' : 'text-gray-300'}`}>
-                Logged in as <span className={`font-semibold ${theme === 'light' ? 'text-black' : 'text-indigo-300'}`}>{userEmail}</span>
-              </p>
-            </div>
-            <button
-              onClick={handleLogout}
-              className={`px-4 py-2 rounded-xl transition-colors text-sm font-medium ${
-                theme === 'light'
-                  ? 'bg-red-50 hover:bg-red-100 border border-red-200 text-red-600'
-                  : 'bg-red-500/20 hover:bg-red-500/30 border border-red-500/50 text-red-300'
-              }`}
-            >
-              Logout
-            </button>
-          </div>
-        </div>
-      )}
-
       {/* Header */}
       <div className="mb-10 flex items-center justify-between">
         <div>
