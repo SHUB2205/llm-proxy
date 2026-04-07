@@ -388,19 +388,28 @@ export default function LandingPage() {
                 </div>
                 <span className="text-xs text-gray-500 font-mono">main.py</span>
               </div>
-              <pre className="p-6 overflow-x-auto text-sm font-mono">
-                <code className="text-gray-300">{`from openai import OpenAI
-
-client = OpenAI(
-    base_url="https://api.modelsight.net/v1",  `}<span className="text-emerald-400"># ← Change this</span>{`
-    api_key="ms_live_xxxxx"                      `}<span className="text-emerald-400"># ← And this</span>{`
-)
-
-`}<span className="text-gray-500"># That's it. Your agent is now monitored.</span>{`
-response = client.chat.completions.create(
-    model="gpt-4o",
-    messages=[{"role": "user", "content": "..."}]
-)`}</code>
+              <pre className="p-6 overflow-x-auto text-sm font-mono leading-relaxed">
+                <code>
+                  <span className="text-fuchsia-400">from</span> openai <span className="text-fuchsia-400">import</span> OpenAI
+                  <br /><br />
+                  client = OpenAI(
+                  <br />
+                  {'    '}base_url=<span className="text-emerald-300">"https://llm-proxy-production.up.railway.app/v1"</span>,  <span className="text-emerald-500"># ← Change this</span>
+                  <br />
+                  {'    '}api_key=<span className="text-emerald-300">"llm_obs_xxxxx"</span>                    <span className="text-emerald-500"># ← And this</span>
+                  <br />
+                  )
+                  <br /><br />
+                  <span className="text-gray-500"># That's it. Your agent is now monitored.</span>
+                  <br />
+                  response = client.chat.completions.create(
+                  <br />
+                  {'    '}model=<span className="text-emerald-300">"gpt-4o"</span>,
+                  <br />
+                  {'    '}messages=[{'{'}<span className="text-blue-300">"role"</span>: <span className="text-emerald-300">"user"</span>, <span className="text-blue-300">"content"</span>: <span className="text-emerald-300">"..."</span>{'}'}]
+                  <br />
+                  )
+                </code>
               </pre>
             </div>
           </div>

@@ -85,7 +85,7 @@ export default function OnboardPage() {
             <div className="w-16 h-16 bg-green-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
               <span className="text-4xl">✓</span>
             </div>
-            <h1 className={`text-3xl font-bold mb-2 ${theme === 'light' ? 'text-black' : 'text-white'}`}>Welcome to LLM Observability!</h1>
+            <h1 className={`text-3xl font-bold mb-2 ${theme === 'light' ? 'text-black' : 'text-white'}`}>Welcome to ModelSight!</h1>
             <p className={theme === 'light' ? 'text-gray-600' : 'text-gray-400'}>Your account has been created successfully</p>
           </div>
 

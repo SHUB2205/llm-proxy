@@ -2,7 +2,7 @@ import type { Metadata } from 'next'
 import RootLayoutClient from './RootLayoutClient'
 
 export const metadata: Metadata = {
-  title: 'LLM Proxy Dashboard',
+  title: 'ModelSight',
   description: 'Monitor your LLM requests in real time',
 }
 

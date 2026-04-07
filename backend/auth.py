@@ -115,7 +115,8 @@ async def verify_api_key(authorization: Optional[str] = Header(None)) -> Dict:
             "user_id": user_data["users"]["id"],
             "email": user_data["users"]["email"],
             "user_data": user_data["users"],
-            "proxy_key": token_or_key
+            "proxy_key": token_or_key,
+            "proxy_key_id": user_data["id"]
         }
     
     raise HTTPException(status_code=401, detail="Invalid authorization format")

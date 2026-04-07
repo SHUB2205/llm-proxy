@@ -48,19 +48,19 @@ export default function RunsPage() {
 
   if (loading) {
     return (
-      <div className={`flex items-center justify-center min-h-screen ${theme === 'light' ? 'bg-white' : 'bg-[#0f172a]'}`}>
-        <div className={`animate-spin rounded-full h-12 w-12 border-b-2 ${theme === 'light' ? 'border-black' : 'border-indigo-500'}`}></div>
+      <div className={`flex items-center justify-center min-h-screen ${theme === 'light' ? 'bg-gray-50' : 'bg-slate-950'}`}>
+        <div className={`animate-spin rounded-full h-12 w-12 border-b-2 ${theme === 'light' ? 'border-blue-600' : 'border-blue-500'}`}></div>
       </div>
     )
   }
 
   return (
-    <div className={`p-8 min-h-screen ${theme === 'light' ? 'bg-white text-black' : 'bg-[#0f172a] text-white'}`}>
+    <div className={`pt-20 px-8 pb-16 min-h-screen ${theme === 'light' ? 'bg-gray-50 text-slate-900' : 'bg-slate-950 text-gray-100'}`}>
       {/* Header */}
-      <div className="mb-8 flex items-center justify-between">
+      <div className="mb-10 flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h1 className={`text-4xl font-bold mb-2 ${theme === 'light' ? 'text-black' : 'text-white'}`}>All Requests</h1>
-          <p className={theme === 'light' ? 'text-gray-600' : 'text-slate-400'}>View and filter your LLM API calls</p>
+          <h1 className={`text-4xl font-bold tracking-tight mb-2 ${theme === 'light' ? 'text-slate-900' : 'text-white'}`}>All Requests</h1>
+          <p className={theme === 'light' ? 'text-gray-600' : 'text-gray-400'}>View and filter your LLM API calls</p>
         </div>
 
         {/* Filters */}
@@ -68,10 +68,10 @@ export default function RunsPage() {
           <select
             value={filter.model}
             onChange={(e) => setFilter({ ...filter, model: e.target.value })}
-            className={`px-4 py-2 rounded-xl focus:outline-none focus:ring-2 ${
+            className={`px-4 py-2.5 rounded-xl text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all ${
               theme === 'light'
-                ? 'bg-white border border-gray-300 text-black focus:ring-black'
-                : 'bg-slate-800 border border-slate-700 text-white focus:ring-indigo-500'
+                ? 'bg-white border border-gray-200 text-slate-900 shadow-sm hover:border-gray-300'
+                : 'bg-slate-900/50 border border-white/10 text-white backdrop-blur-sm hover:border-white/20'
             }`}
           >
             <option value="">All Models</option>
@@ -98,10 +98,10 @@ export default function RunsPage() {
           <select
             value={filter.limit}
             onChange={(e) => setFilter({ ...filter, limit: parseInt(e.target.value) })}
-            className={`px-4 py-2 rounded-xl focus:outline-none focus:ring-2 ${
+            className={`px-4 py-2.5 rounded-xl text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all ${
               theme === 'light'
-                ? 'bg-white border border-gray-300 text-black focus:ring-black'
-                : 'bg-slate-800 border border-slate-700 text-white focus:ring-indigo-500'
+                ? 'bg-white border border-gray-200 text-slate-900 shadow-sm hover:border-gray-300'
+                : 'bg-slate-900/50 border border-white/10 text-white backdrop-blur-sm hover:border-white/20'
             }`}
           >
             <option value={50}>50 results</option>
@@ -112,49 +112,55 @@ export default function RunsPage() {
       </div>
 
       {/* Stats Summary */}
-      <div className="grid grid-cols-4 gap-4 mb-8">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-10">
         <SummaryStat
           label="Total Requests"
           value={runs.length}
-          icon="📊"
+          color="blue"
           theme={theme}
         />
         <SummaryStat
           label="Total Tokens"
           value={runs.reduce((sum, r) => sum + (r.total_tokens || 0), 0).toLocaleString()}
-          icon="🎯"
+          color="cyan"
           theme={theme}
         />
         <SummaryStat
           label="Total Cost"
           value={`$${runs.reduce((sum, r) => sum + (r.cost_usd || 0), 0).toFixed(4)}`}
-          icon="💰"
+          color="emerald"
           theme={theme}
         />
         <SummaryStat
           label="Avg Latency"
           value={`${Math.round(runs.reduce((sum, r) => sum + (r.latency_ms || 0), 0) / (runs.length || 1))}ms`}
-          icon="⚡"
+          color="amber"
           theme={theme}
         />
       </div>
 
       {/* Table */}
-      <div className={`rounded-2xl shadow-lg overflow-hidden ${
+      <div className={`rounded-2xl overflow-hidden ${
         theme === 'light'
-          ? 'bg-white border border-gray-200'
-          : 'bg-slate-800/70 border border-slate-700 backdrop-blur-xl'
+          ? 'bg-white border border-gray-200 shadow-sm'
+          : 'bg-slate-900/50 border border-white/10 backdrop-blur-xl shadow-2xl shadow-blue-500/5'
       }`}>
         {runs.length === 0 ? (
-          <div className={`p-12 text-center ${theme === 'light' ? 'text-gray-600' : 'text-gray-400'}`}>
-            <div className="text-4xl mb-4">📭</div>
-            <p className="text-lg font-medium mb-2">No requests found</p>
-            <p className="text-sm">Try adjusting your filters or send some requests through the proxy</p>
+          <div className={`p-16 text-center ${theme === 'light' ? 'text-gray-600' : 'text-gray-400'}`}>
+            <div className={`w-20 h-20 mx-auto rounded-full flex items-center justify-center mb-6 ${
+              theme === 'dark' ? 'bg-white/5' : 'bg-gray-100'
+            }`}>
+              <svg className={`w-10 h-10 ${theme === 'dark' ? 'text-gray-500' : 'text-gray-400'}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 19v-8.93a2 2 0 01.89-1.664l7-4.666a2 2 0 012.22 0l7 4.666A2 2 0 0121 10.07V19M3 19a2 2 0 002 2h14a2 2 0 002-2M3 19l6.75-4.5M21 19l-6.75-4.5M3 10l6.75 4.5M21 10l-6.75 4.5m0 0l-1.14.76a2 2 0 01-2.22 0l-1.14-.76" />
+              </svg>
+            </div>
+            <p className={`text-xl font-semibold mb-2 ${theme === 'dark' ? 'text-white' : 'text-slate-900'}`}>No requests found</p>
+            <p className={theme === 'light' ? 'text-gray-500' : 'text-gray-500'}>Try adjusting your filters or send some requests through the proxy.</p>
           </div>
         ) : (
           <div className="overflow-x-auto">
             <table className="min-w-full text-sm">
-              <thead className={theme === 'light' ? 'bg-gray-50 border-b border-gray-200' : 'bg-slate-900/60 border-b border-slate-700'}>
+              <thead className={theme === 'light' ? 'bg-gray-50 border-b border-gray-200' : 'bg-white/[0.02] border-b border-white/10'}>
                 <tr>
                   <Th theme={theme}>Time</Th>
                   <Th theme={theme}>Model</Th>
@@ -164,7 +170,7 @@ export default function RunsPage() {
                   <Th theme={theme}>Status</Th>
                 </tr>
               </thead>
-              <tbody className={theme === 'light' ? 'divide-y divide-gray-200' : 'divide-y divide-slate-700'}>
+              <tbody className={theme === 'light' ? 'divide-y divide-gray-100' : 'divide-y divide-white/5'}>
                 {runs.map((r) => (
                   <tr
                     key={r.id}
@@ -172,27 +178,33 @@ export default function RunsPage() {
                     className={`cursor-pointer transition-all ${
                       theme === 'light'
                         ? 'hover:bg-gray-50'
-                        : 'hover:bg-indigo-900/20 hover:shadow-[0_0_10px_rgba(99,102,241,0.3)]'
+                        : 'hover:bg-white/[0.03]'
                     }`}
                   >
-                    <Td theme={theme}>{new Date(r.created_at).toLocaleString()}</Td>
+                    <Td theme={theme} className={theme === 'light' ? 'text-gray-600' : 'text-gray-400'}>
+                      {new Date(r.created_at).toLocaleString()}
+                    </Td>
                     <Td theme={theme}>
-                      <span className={`px-3 py-1 rounded-lg font-medium ${
+                      <span className={`px-2.5 py-1 rounded-md text-xs font-medium border ${
                         theme === 'light'
-                          ? 'bg-gray-100 border border-gray-300 text-black'
-                          : 'bg-indigo-900/30 border border-indigo-500/50 text-indigo-300'
+                          ? 'bg-white border-gray-200 text-slate-700 shadow-sm'
+                          : 'bg-white/5 border-white/10 text-gray-300'
                       }`}>
                         {r.model}
                       </span>
                     </Td>
-                    <Td theme={theme} className="font-semibold">{r.total_tokens?.toLocaleString() || 0}</Td>
-                    <Td theme={theme} className="font-mono">${(r.cost_usd || 0).toFixed(5)}</Td>
+                    <Td theme={theme} className={`font-medium ${theme === 'light' ? 'text-slate-900' : 'text-gray-200'}`}>
+                      {r.total_tokens?.toLocaleString() || 0}
+                    </Td>
+                    <Td theme={theme} className={`font-mono text-[13px] ${theme === 'light' ? 'text-slate-600' : 'text-gray-400'}`}>
+                      ${(r.cost_usd || 0).toFixed(5)}
+                    </Td>
                     <Td theme={theme}>
-                      <span className={`${
-                        r.latency_ms < 1000 ? 'text-green-400' :
-                        r.latency_ms < 3000 ? 'text-yellow-400' :
-                        'text-red-400'
-                      } font-semibold`}>
+                      <span className={`font-medium ${
+                        r.latency_ms < 1000 ? (theme === 'light' ? 'text-emerald-600' : 'text-emerald-400') :
+                        r.latency_ms < 3000 ? (theme === 'light' ? 'text-amber-600' : 'text-amber-400') :
+                        (theme === 'light' ? 'text-red-600' : 'text-red-400')
+                      }`}>
                         {r.latency_ms}ms
                       </span>
                     </Td>
@@ -212,8 +224,8 @@ export default function RunsPage() {
 
 function Th({ children, theme }: { children: React.ReactNode; theme: 'light' | 'dark' }) {
   return (
-    <th className={`px-6 py-4 text-left text-xs font-bold uppercase tracking-wider ${
-      theme === 'light' ? 'text-gray-700' : 'text-slate-300'
+    <th className={`px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider ${
+      theme === 'light' ? 'text-gray-500' : 'text-gray-400'
     }`}>
       {children}
     </th>
@@ -222,47 +234,56 @@ function Th({ children, theme }: { children: React.ReactNode; theme: 'light' | '
 
 function Td({ children, className = '', theme }: { children: React.ReactNode; className?: string; theme: 'light' | 'dark' }) {
   return (
-    <td className={`px-6 py-4 whitespace-nowrap ${className} ${
-      theme === 'light' ? 'text-gray-900' : 'text-slate-300'
-    }`}>
+    <td className={`px-6 py-4 whitespace-nowrap ${className}`}>
       {children}
     </td>
   )
 }
 
-function SummaryStat({ label, value, icon, theme }: { label: string; value: string | number; icon: string; theme: 'light' | 'dark' }) {
+function SummaryStat({ label, value, color, theme }: { label: string; value: string | number; color: string; theme: 'light' | 'dark' }) {
+  const getColorClasses = (color: string) => {
+    const colors: Record<string, string> = {
+      blue: 'bg-blue-500/10 border-blue-500/20 text-blue-400',
+      cyan: 'bg-cyan-500/10 border-cyan-500/20 text-cyan-400',
+      emerald: 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400',
+      amber: 'bg-amber-500/10 border-amber-500/20 text-amber-400',
+    }
+    return colors[color] || colors.blue
+  }
+
+  const colorClasses = theme === 'dark' 
+    ? getColorClasses(color) 
+    : 'bg-white border-gray-200 text-slate-900 shadow-sm hover:shadow-md';
+
   return (
-    <div className={`rounded-xl p-4 ${
-      theme === 'light'
-        ? 'bg-white border border-gray-200'
-        : 'bg-slate-800/70 backdrop-blur-xl border border-slate-700'
-    }`}>
-      <div className="flex items-center justify-between mb-2">
-        <span className="text-sm text-gray-400">{label}</span>
-        <span className="text-2xl">{icon}</span>
+    <div className={`rounded-xl p-5 border transition-all duration-300 hover:-translate-y-1 ${colorClasses}`}>
+      <div className={`text-xs mb-2 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-500 font-medium uppercase tracking-wider'}`}>
+        {label}
       </div>
-      <div className={`text-2xl font-bold ${theme === 'light' ? 'text-black' : 'text-white'}`}>{value}</div>
+      <div className={`text-3xl font-bold tracking-tight ${theme === 'dark' ? 'text-white' : 'text-slate-900'}`}>
+        {value}
+      </div>
     </div>
   )
 }
 
 function StatusBadge({ status, theme }: { status: string; theme: 'light' | 'dark' }) {
   const lightStyles = {
-    success: 'bg-green-50 border-green-300 text-green-700',
-    flagged: 'bg-red-50 border-red-300 text-red-700',
-    error: 'bg-orange-50 border-orange-300 text-orange-700'
+    success: 'bg-emerald-50 border-emerald-200 text-emerald-700',
+    flagged: 'bg-red-50 border-red-200 text-red-700',
+    error: 'bg-amber-50 border-amber-200 text-amber-700'
   }
   
   const darkStyles = {
-    success: 'bg-green-900/30 border-green-500/50 text-green-300',
-    flagged: 'bg-red-900/30 border-red-500/50 text-red-300',
-    error: 'bg-orange-900/30 border-orange-500/50 text-orange-300'
+    success: 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400',
+    flagged: 'bg-red-500/10 border-red-500/20 text-red-400',
+    error: 'bg-amber-500/10 border-amber-500/20 text-amber-400'
   }
   
   const styles = theme === 'light' ? lightStyles : darkStyles
 
   return (
-    <span className={`px-3 py-1 rounded-lg text-xs font-bold border ${styles[status as keyof typeof styles] || styles.success}`}>
+    <span className={`px-2.5 py-1 rounded-md text-[11px] uppercase tracking-wider font-bold border ${styles[status as keyof typeof styles] || styles.success}`}>
       {status}
     </span>
   )

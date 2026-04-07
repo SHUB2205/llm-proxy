@@ -342,7 +342,7 @@ async def proxy_chat_completions(
                 advanced_result = await advanced_detector.detect(
                     question=prompt_text,
                     answer=response_text,
-                    openai_key=openai_key,
+                    openai_key=openai_api_key,
                     context=body.get("context", None)  # Optional RAG context
                 )
             except Exception as e:
@@ -357,6 +357,8 @@ async def proxy_chat_completions(
             risk_score, risk_level = calculate_overall_risk_score(flags)
         
         # Log to database with flags
+        # proxy_key_id is available in user dict when authenticated via API key
+        proxy_key_id = user.get("proxy_key_id", None)
         await log_request_with_flags(
             run_id=run_id,
             user_id=user_id,
@@ -371,11 +373,12 @@ async def proxy_chat_completions(
         if FINOPS_ENABLED and finops_tracker and "usage" in result:
             try:
                 # Get organization_id from user context or use user_id
-                organization_id = user_context.get("users", {}).get("organization_id") or user_id
+                user_data = user.get("user_data") or {}
+                organization_id = user_data.get("organization_id") or user_id
                 
                 # Start workflow if not exists
                 workflow_id = f"user_{user_id}_session"
-                session_id = user_context.get("users", {}).get("id", user_id)
+                session_id = user_data.get("id", user_id)
                 if workflow_id not in finops_tracker.active_workflows:
                     await finops_tracker.start_workflow(
                         workflow_id=workflow_id,
@@ -611,7 +614,7 @@ async def get_dashboard(
     user_id = user["user_id"]
     
     # Get stats
-    stats = await get_stats(user_context)
+    stats = await get_stats(user=user)
     
     # Get recent flagged runs
     flagged_runs = (
