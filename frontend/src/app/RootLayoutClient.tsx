@@ -21,7 +21,7 @@ export default function RootLayoutClient({ children }: { children: React.ReactNo
 
 function LayoutContent({ children }: { children: React.ReactNode }) {
   const pathname = usePathname()
-  const isLandingPage = pathname === '/landing'
+  const isLandingPage = pathname === '/' || pathname === '/landing'
   const { theme } = useTheme()
   
   return (
@@ -38,7 +38,7 @@ function Sidebar() {
   const { theme, toggleTheme } = useTheme()
   
   const links = [
-    { name: 'Dashboard', href: '/', icon: '' },
+    { name: 'Dashboard', href: '/dashboard', icon: '' },
     { name: 'FinOps', href: '/finops', icon: '' },
     { name: 'Drift Detection', href: '/drift', icon: '' },
     { name: 'Prompt Optimizer', href: '/optimizer', icon: '' },

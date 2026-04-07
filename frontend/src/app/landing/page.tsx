@@ -60,7 +60,7 @@ export default function LandingPage() {
             <a href="#integration" className="text-sm text-gray-400 hover:text-white transition-colors">Docs</a>
           </div>
           <div className="flex items-center gap-3">
-            <Link href="/" className="text-sm text-gray-400 hover:text-white transition-colors hidden sm:block">
+            <Link href="/dashboard" className="text-sm text-gray-400 hover:text-white transition-colors hidden sm:block">
               Dashboard
             </Link>
             <button

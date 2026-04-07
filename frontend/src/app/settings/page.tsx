@@ -155,7 +155,7 @@ response = client.chat.completions.create(
           <h2 className={`text-xl font-bold tracking-tight mb-4 ${theme === 'light' ? 'text-slate-900' : 'text-white'}`}>Quick Links</h2>
           <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
             <Link
-              href="/"
+              href="/dashboard"
               className={`p-4 rounded-xl transition-all border ${
                 theme === 'light' 
                   ? 'bg-gray-50 border-gray-200 hover:bg-gray-100 hover:border-gray-300' 

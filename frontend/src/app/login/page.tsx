@@ -18,7 +18,7 @@ export default function LoginPage() {
 
   useEffect(() => {
     if (isAuthenticated) {
-      router.push('/')
+      router.push('/dashboard')
     }
   }, [isAuthenticated, router])
 
@@ -44,7 +44,7 @@ export default function LoginPage() {
       if (data.success && data.proxy_key) {
         // Login with proxy key
         login(data.proxy_key, email)
-        router.push('/')
+        router.push('/dashboard')
       } else {
         setError('Login failed. Please try again.')
       }

@@ -27,7 +27,7 @@ export default function OnboardPage() {
   // Redirect if already authenticated
   useEffect(() => {
     if (isAuthenticated && step === 1) {
-      router.push('/')
+      router.push('/dashboard')
     }
   }, [isAuthenticated, step, router])
 
@@ -160,7 +160,7 @@ print(result["observability"])  # View flags`}
 
             <div className="flex gap-4">
               <a
-                href="/"
+                href="/dashboard"
                 className={`flex-1 px-6 py-3 text-white rounded-xl font-medium text-center transition-colors ${theme === 'light' ? 'bg-black hover:bg-gray-800' : 'bg-indigo-600 hover:bg-indigo-700'}`}
               >
                 Go to Dashboard
