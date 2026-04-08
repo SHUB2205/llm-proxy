@@ -1,49 +1,8 @@
 'use client'
 
-import { useState } from 'react'
 import Link from 'next/link'
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'
-
 export default function LandingPage() {
-  const [email, setEmail] = useState('')
-  const [loading, setLoading] = useState(false)
-  const [submitted, setSubmitted] = useState(false)
-  const [error, setError] = useState('')
-  const [showWaitlistForm, setShowWaitlistForm] = useState(false)
-
-  const handleWaitlistSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setLoading(true)
-    setError('')
-
-    try {
-      const response = await fetch(`${API_URL}/api/waitlist`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email })
-      })
-
-      if (response.ok) {
-        setSubmitted(true)
-        setEmail('')
-      } else {
-        setError('Something went wrong. Please try again.')
-      }
-    } catch (err) {
-      setError('Failed to join waitlist. Please try again.')
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  const scrollToWaitlist = () => {
-    setShowWaitlistForm(true)
-    setTimeout(() => {
-      document.getElementById('waitlist')?.scrollIntoView({ behavior: 'smooth' })
-    }, 100)
-  }
-
   return (
     <div className="min-h-screen bg-slate-950 text-gray-100 overflow-hidden">
 
@@ -63,12 +22,12 @@ export default function LandingPage() {
             <Link href="/dashboard" className="text-sm text-gray-400 hover:text-white transition-colors hidden sm:block">
               Dashboard
             </Link>
-            <button
-              onClick={scrollToWaitlist}
+            <Link
+              href="/login"
               className="px-4 py-2 bg-blue-600 text-white rounded-full text-sm font-medium hover:bg-blue-700 transition-colors"
             >
-              Join Waitlist
-            </button>
+              Get Started
+            </Link>
           </div>
         </div>
       </nav>
@@ -92,13 +51,13 @@ export default function LandingPage() {
           </p>
 
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-8">
-            <button
-              onClick={scrollToWaitlist}
+            <Link
+              href="/login"
               className="group px-8 py-4 bg-blue-600 text-white rounded-full text-lg font-semibold hover:bg-blue-700 transition-all flex items-center gap-2"
             >
-              Join Waitlist
+              Get Started
               <svg className="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" /></svg>
-            </button>
+            </Link>
             <span className="text-sm text-gray-500 flex items-center gap-2">
               <svg className="w-4 h-4 text-emerald-400" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" /></svg>
               No credit card required
@@ -419,8 +378,6 @@ export default function LandingPage() {
               <p className="text-sm text-gray-500 mb-3 uppercase tracking-wider">Supported Providers</p>
               <div className="flex flex-wrap justify-center md:justify-start gap-3">
                 <span className="px-3 py-1.5 bg-emerald-500/10 border border-emerald-500/30 rounded-lg text-sm text-emerald-300">OpenAI ✓</span>
-                <span className="px-3 py-1.5 bg-white/5 border border-white/10 rounded-lg text-sm text-gray-500">Anthropic — coming soon</span>
-                <span className="px-3 py-1.5 bg-white/5 border border-white/10 rounded-lg text-sm text-gray-500">Gemini — coming soon</span>
               </div>
             </div>
             <div className="text-center md:text-left">
@@ -529,12 +486,12 @@ export default function LandingPage() {
                   Community support
                 </li>
               </ul>
-              <button
-                onClick={scrollToWaitlist}
-                className="w-full px-6 py-3 bg-white/5 border border-white/10 text-white rounded-xl hover:bg-white/10 transition-all font-medium"
+              <Link
+                href="/login"
+                className="block w-full px-6 py-3 bg-white/5 border border-white/10 text-white rounded-xl hover:bg-white/10 transition-all font-medium text-center"
               >
-                Join Waitlist →
-              </button>
+                Get Started →
+              </Link>
             </div>
 
             {/* Pro */}
@@ -576,12 +533,12 @@ export default function LandingPage() {
                     Drift detection
                   </li>
                 </ul>
-                <button
-                  onClick={scrollToWaitlist}
-                  className="w-full px-6 py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-all font-medium"
+                <Link
+                  href="/login"
+                  className="block w-full px-6 py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-all font-medium text-center"
                 >
-                  Join Waitlist →
-                </button>
+                  Get Started →
+                </Link>
               </div>
             </div>
 
@@ -641,13 +598,13 @@ export default function LandingPage() {
           <p className="text-xl text-gray-400 mb-10 max-w-xl mx-auto">
             Your AI agents are talking to customers right now. Do you know what they're saying?
           </p>
-          <button
-            onClick={scrollToWaitlist}
+          <Link
+            href="/login"
             className="group px-8 py-4 bg-blue-600 text-white rounded-full text-lg font-semibold hover:bg-blue-700 transition-all flex items-center gap-2 mx-auto"
           >
-            Join Waitlist
+            Get Started
             <svg className="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" /></svg>
-          </button>
+          </Link>
           <p className="text-sm text-gray-500 mt-6 flex items-center justify-center gap-4">
             <span className="flex items-center gap-1.5">
               <svg className="w-4 h-4 text-emerald-400" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" /></svg>
@@ -664,82 +621,6 @@ export default function LandingPage() {
           </p>
         </div>
       </section>
-
-      {/* Waitlist Section */}
-      {showWaitlistForm && (
-        <section id="waitlist" className="relative py-20 px-6 bg-gradient-to-b from-transparent to-slate-900/50">
-          <div className="max-w-2xl mx-auto">
-            <div className="bg-gradient-to-br from-slate-900 to-slate-800 border border-blue-500/30 rounded-3xl p-12 text-center shadow-2xl shadow-blue-500/10">
-              {!submitted ? (
-                <>
-                  <h2 className="text-4xl md:text-5xl font-bold mb-4 text-white">
-                    Join the waitlist
-                  </h2>
-                  <p className="text-xl text-gray-400 mb-8">
-                    Get early access to ModelSight. Limited beta spots available.
-                  </p>
-
-                  <form onSubmit={handleWaitlistSubmit} className="max-w-md mx-auto">
-                    <div className="flex flex-col sm:flex-row gap-3">
-                      <input
-                        type="email"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        placeholder="Enter your email"
-                        required
-                        className="flex-1 px-6 py-4 bg-slate-800 border border-slate-700 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
-                      />
-                      <button
-                        type="submit"
-                        disabled={loading}
-                        className="px-8 py-4 bg-blue-600 hover:bg-blue-500 disabled:opacity-50 disabled:cursor-not-allowed rounded-xl font-semibold transition-all text-white shadow-lg shadow-blue-500/25"
-                      >
-                        {loading ? 'Joining...' : 'Join Waitlist'}
-                      </button>
-                    </div>
-                    {error && (
-                      <p className="mt-3 text-sm text-red-400">{error}</p>
-                    )}
-                  </form>
-
-                  <div className="mt-8 flex items-center justify-center gap-8 text-sm text-gray-500">
-                    <div className="flex items-center gap-2">
-                      <svg className="w-5 h-5 text-emerald-400" fill="currentColor" viewBox="0 0 20 20">
-                        <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                      </svg>
-                      <span>No credit card required</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <svg className="w-5 h-5 text-emerald-400" fill="currentColor" viewBox="0 0 20 20">
-                        <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                      </svg>
-                      <span>Early access pricing</span>
-                    </div>
-                  </div>
-                </>
-              ) : (
-                <div className="py-8">
-                  <div className="w-20 h-20 bg-emerald-500/20 rounded-full flex items-center justify-center mx-auto mb-6">
-                    <svg className="w-10 h-10 text-emerald-400" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                    </svg>
-                  </div>
-                  <h3 className="text-3xl font-bold mb-3 text-white">You're on the list! 🎉</h3>
-                  <p className="text-gray-400 mb-6">
-                    We'll send you an invite soon. Check your email for updates.
-                  </p>
-                  <button
-                    onClick={() => setSubmitted(false)}
-                    className="text-blue-400 hover:text-blue-300 text-sm transition-colors"
-                  >
-                    Add another email
-                  </button>
-                </div>
-              )}
-            </div>
-          </div>
-        </section>
-      )}
 
       {/* Footer */}
       <footer className="py-12 px-6 border-t border-white/5">
