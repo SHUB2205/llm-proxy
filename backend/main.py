@@ -27,6 +27,14 @@ from database import (
 from hallucination_detector import HallucinationDetector, calculate_overall_risk_score
 from auth import get_current_user, verify_api_key
 from auth_api import router as auth_router
+from llm_providers import (
+    detect_provider,
+    get_provider_api_key,
+    call_provider,
+    calculate_cost,
+    ProviderError,
+    SUPPORTED_MODELS,
+)
 
 # Try to import advanced detection (optional - requires heavy ML dependencies)
 try:
@@ -300,26 +308,24 @@ async def proxy_chat_completions(
     # Extract user info
     user_id = user["user_id"]
     
-    # Get user's OpenAI API key
-    openai_api_key = await get_user_openai_key(user_id)
+    # Detect provider from model name
+    model = body.get("model", "gpt-4o-mini")
+    provider = body.pop("provider", None) or detect_provider(model)
     
-    if not openai_api_key:
-        raise HTTPException(status_code=500, detail="OpenAI API key not found for user")
+    # Resolve API key for the detected provider
+    user_openai_key = await get_user_openai_key(user_id)
+    api_key = get_provider_api_key(provider, user_api_key=user_openai_key)
+    
+    if not api_key:
+        raise HTTPException(
+            status_code=400,
+            detail=f"No API key configured for provider '{provider}'. "
+                   f"Set the {provider.upper()}_API_KEY environment variable."
+        )
     
     try:
-        # Forward request to OpenAI
-        async with httpx.AsyncClient() as client:
-            response = await client.post(
-                "https://api.openai.com/v1/chat/completions",
-                json=body,
-                headers={
-                    "Authorization": f"Bearer {openai_api_key}",
-                    "Content-Type": "application/json",
-                },
-                timeout=60.0,
-            )
-        
-        result = response.json()
+        # Route to the correct provider adapter
+        result = await call_provider(provider, model, body, api_key)
         latency_ms = int((time.time() - start_time) * 1000)
         
         # Extract prompt and response for analysis
@@ -335,14 +341,14 @@ async def proxy_chat_completions(
         advanced_result = None
         if response_text:
             # Run basic detection for backward compatibility
-            flags = detector.analyze(prompt_text, response_text, body.get("model", "unknown"))
+            flags = detector.analyze(prompt_text, response_text, model)
             
             # Run advanced detection
             try:
                 advanced_result = await advanced_detector.detect(
                     question=prompt_text,
                     answer=response_text,
-                    openai_key=openai_api_key,
+                    openai_key=api_key,
                     context=body.get("context", None)  # Optional RAG context
                 )
             except Exception as e:
@@ -404,16 +410,16 @@ async def proxy_chat_completions(
             except Exception as e:
                 print(f"⚠️  FinOps tracking failed: {e}")
         
-        # Calculate cost for observability
+        # Calculate cost for observability (multi-provider aware)
         cost_usd = 0.0
         if "usage" in result:
-            # Simple cost calculation (gpt-4o-mini pricing)
             input_tokens = result["usage"].get("prompt_tokens", 0)
             output_tokens = result["usage"].get("completion_tokens", 0)
-            cost_usd = (input_tokens * 0.00015 / 1000) + (output_tokens * 0.0006 / 1000)
+            cost_usd = calculate_cost(model, input_tokens, output_tokens)
         
         # Add observability metadata to response
         observability_data = {
+            "provider": provider,
             "flags_detected": len(flags),
             "risk_score": risk_score,
             "risk_level": risk_level,
@@ -444,10 +450,29 @@ async def proxy_chat_completions(
             **result
         }
     
+    except ProviderError as e:
+        raise HTTPException(status_code=e.status_code, detail=f"{e.provider} API error: {e.detail}")
     except httpx.HTTPError as e:
-        raise HTTPException(status_code=500, detail=f"OpenAI API error: {str(e)}")
+        raise HTTPException(status_code=502, detail=f"Upstream provider error: {str(e)}")
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Proxy error: {str(e)}")
+
+
+# ============================================
+# Model Discovery
+# ============================================
+
+@app.get("/v1/models")
+async def list_models():
+    """List all supported models grouped by provider"""
+    return {
+        "object": "list",
+        "data": [
+            {"id": m, "object": "model", "owned_by": provider}
+            for provider, models in SUPPORTED_MODELS.items()
+            for m in models
+        ]
+    }
 
 
 # ============================================

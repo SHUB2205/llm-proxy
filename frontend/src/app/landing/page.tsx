@@ -418,10 +418,9 @@ export default function LandingPage() {
             <div className="text-center md:text-left">
               <p className="text-sm text-gray-500 mb-3 uppercase tracking-wider">Supported Providers</p>
               <div className="flex flex-wrap justify-center md:justify-start gap-3">
-                <span className="px-3 py-1.5 bg-white/5 border border-white/10 rounded-lg text-sm text-gray-300">OpenAI</span>
-                <span className="px-3 py-1.5 bg-white/5 border border-white/10 rounded-lg text-sm text-gray-300">Anthropic</span>
-                <span className="px-3 py-1.5 bg-white/5 border border-white/10 rounded-lg text-sm text-gray-300">Gemini</span>
-                <span className="px-3 py-1.5 bg-white/5 border border-white/10 rounded-lg text-sm text-gray-300">DeepSeek</span>
+                <span className="px-3 py-1.5 bg-emerald-500/10 border border-emerald-500/30 rounded-lg text-sm text-emerald-300">OpenAI ✓</span>
+                <span className="px-3 py-1.5 bg-white/5 border border-white/10 rounded-lg text-sm text-gray-500">Anthropic — coming soon</span>
+                <span className="px-3 py-1.5 bg-white/5 border border-white/10 rounded-lg text-sm text-gray-500">Gemini — coming soon</span>
               </div>
             </div>
             <div className="text-center md:text-left">

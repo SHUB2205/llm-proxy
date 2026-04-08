@@ -6,6 +6,7 @@ from typing import List, Dict, Optional
 from cryptography.fernet import Fernet
 import base64
 import hashlib
+from llm_providers import calculate_cost
 
 load_dotenv()
 
@@ -25,15 +26,11 @@ async def log_request(run_id: str, request_body: dict, response_body: dict, late
     model = request_body.get("model")
     usage = response_body.get("usage", {})
     
-    # Calculate cost
-    cost_per_1k = {
-        "gpt-4o": {"input": 0.0025, "output": 0.01},
-        "gpt-4o-mini": {"input": 0.00015, "output": 0.0006},
-    }
-    model_costs = cost_per_1k.get(model, {"input": 0.001, "output": 0.002})
-    cost_usd = (
-        (usage.get("prompt_tokens", 0) / 1000 * model_costs["input"]) +
-        (usage.get("completion_tokens", 0) / 1000 * model_costs["output"])
+    # Calculate cost (multi-provider aware)
+    cost_usd = calculate_cost(
+        model or "unknown",
+        usage.get("prompt_tokens", 0),
+        usage.get("completion_tokens", 0)
     )
     
     # Extract response text
@@ -168,17 +165,11 @@ async def log_request_with_flags(
     model = request_body.get("model")
     usage = response_body.get("usage", {})
     
-    # Calculate cost
-    cost_per_1k = {
-        "gpt-4o": {"input": 0.0025, "output": 0.01},
-        "gpt-4o-mini": {"input": 0.00015, "output": 0.0006},
-        "gpt-4-turbo": {"input": 0.01, "output": 0.03},
-        "gpt-3.5-turbo": {"input": 0.0005, "output": 0.0015},
-    }
-    model_costs = cost_per_1k.get(model, {"input": 0.001, "output": 0.002})
-    cost_usd = (
-        (usage.get("prompt_tokens", 0) / 1000 * model_costs["input"]) +
-        (usage.get("completion_tokens", 0) / 1000 * model_costs["output"])
+    # Calculate cost (multi-provider aware)
+    cost_usd = calculate_cost(
+        model or "unknown",
+        usage.get("prompt_tokens", 0),
+        usage.get("completion_tokens", 0)
     )
     
     # Extract response text
